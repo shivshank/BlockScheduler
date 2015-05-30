@@ -4,6 +4,12 @@ var Section = function(name, period, on_days, css) {
     this.on_days = on_days;
     this.css = css;
 };
+Section.prototype.removeBlock = function(b) {
+    var i = this.on_days.indexOf(b);
+    if (i !== -1) {
+        this.on_days.splice(i, 1);
+    }
+};
 
 /* Wrap date object with school day information */
 var day = function(dateStr, data) {

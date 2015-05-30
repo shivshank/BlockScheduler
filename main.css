@@ -36,6 +36,7 @@ html {
     color: #333333;
     
     transition: box-shadow 1s;
+    -webkit-transition: box-shadow 1s;
     
     cursor: pointer;
 }
@@ -64,59 +65,114 @@ html {
     width: 580px;
 }
 
-.class-list {
-    list-style-type: none;
+#schedule {
+    margin: 150px 0px 0px 250px;
+    width: auto;
 }
 
-.class-list li {
+#schedule-info {
+    width: 800px;
+}
+
+#class-list-div {
+    float: left;
+    width: 100px;
+    margin: 10px;
+    border: 1px solid black;
+}
+
+#class-list {
     list-style-type: none;
-    display: table-cell;
+    padding: 0px;
+    margin: 0px;
+}
+
+#class-list-div button {
+    display: block;
+    margin: 0px;
+    width: 100%;
     
     border: none;
-    width: 150px;
-    height: 50px;
-    text-align: center;
-    vertical-align: middle;
-    
-    background: #333333;
-    color: #EEEEEE;
-    font-weight: bold;
-    
     transition: background 0.5s;
+    -webkit-transition: background 0.5s;
+    
+    min-height: 25px;
 }
-.class-list li span {
-    display: table-cell;
-    text-align: center;
-    vertical-align: middle;
-}
-
-.class-list :hover:last-child {
+#class-list-add-new {
     background: #3366FF;
 }
-.class-list td:hover:not(last-child) {
-    background: #FF5511;
+#class-list-add-new:hover {
+    background: #88AAFF;
+}
+#class-list-remove-selected {
+    background: #FF3300;
+}
+#class-list-remove-selected:hover {
+    background: #FF5533;
 }
 
-table input {
+#class-list li {
+    list-style-type: none;
+    
+    display: block;
+    padding: 5px 0px;
+    margin: 5px 0px;
+    border: none;
+    
+    text-align: center;
+    
+    color: black;
+    
+    transition: background 0.5s;
+    -webkit-transition: background 0.5s;
+}
+
+#class-list li span {
+    width: 100%;
+    text-align: center;
+}
+
+#class-list li:hover {
+    background: #3366FF;
+}
+#class-list .selected {
+    background: #3366Ff;
+    font-weight: bold;
+}
+
+#class-list li input {
     text-align: center;
     border: none;
     padding: 15px;
     font-weight: bold;
 }
 
-table.teacher-schedule {
-    border-collapse: collapse;
-    margin: 10px 0px;
+#prep-styler-div {
+    margin: 10px;
+    padding: 5px;
+    
+    width: 800px;
+    text-align: center;
+    border: 1px solid;
 }
 
-table.teacher-schedule > thead {
+#teacher-schedule-div {
+    float: left;
+    margin: 10px;
+}
+
+#teacher-schedule {
+    border-collapse: collapse;
+}
+
+#teacher-schedule > thead {
     font-weight: bold;
     background: #333333;
     color: #EEEEEE;
 }
 
-table.teacher-schedule td {
-    width: 150px;
+#teacher-schedule td {
+    width: 100px;
     height: 50px;
     
     text-align: center;
@@ -125,63 +181,17 @@ table.teacher-schedule td {
     border: 1px solid black;
     
     transition: box-shadow 0.5s;
+    -webkit-transition: box-shadow 0.5s;
 }
 
-table.teacher-schedule td:hover:not(:first-child) {
+#teacher-schedule tbody td:hover:not(:first-child) {
     box-shadow: inset 0px 0px 10px #333333;
     cursor: pointer;
     -moz-user-select: none;
     -webkit-user-select: none;
 }
 
-#stat-tab {
-	position: fixed;
-	bottom: 0px;
-	right: 100px;
-	width: 100px;
-	
-	text-align: center;
-	color: #FFF;
-	background: #444444;
-	
-	padding: 5px;
-	margin: 0px;
-	border-radius: 5px 5px 0px 0px;
-	box-shadow: 0px 5px 15px #333333;
-	
-	transition: bottom 0.5s, background 0.5s;
-	
-	z-index: 100;
-}
-
-#stat-tab:hover {
-	background: #3366FF;
-}
-
-#stat-box {
-	position: fixed;
-	bottom: -85px;
-	right: 100px;
-	padding: 5px;
-	
-	min-height: 75px;
-	height: 75px;
-	max-height: 75px;
-	overflow: hidden;
-	
-	background: #444444;
-	color: #FFF;
-	
-	margin: 0px;
-	width: 80%;
-	
-	border-radius: 5px 0px 0px 0px;
-	box-shadow: 0px 5px 15px #333333;
-	
-	transition: bottom 0.5s;
-	
-	z-index: 100;
-}
+/* Settings Tab Styles */
 
 #parameter-box {
 	position: fixed;

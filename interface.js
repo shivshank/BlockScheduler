@@ -10,12 +10,13 @@
         tabs: [],
         // sections not yet scheduled but added to the class lsit
         preps: [],
-        style: null,
-        sections: null,
+        style: {},
+        sections: [],
         skipWeekends: true
     };
     m.state = state;
     
+    /*
     // REFACTOR: Just add data-day and data-period attributes to td...
     var getPrepIndex = function(day, period) {
         return day * params.periods + period;
@@ -24,6 +25,39 @@
     var prepIndexToBlock = function(index) {
         return {day: Math.floor(index / params.periods),
                 period: index % params.periods};
+    };
+    */
+    m.getSection = function(block, period) {
+        block = params.reverser[block];
+        var s = Object.keys(state.sections);
+        var r = null;
+        s.forEach( function(i) {
+            if (state.sections[i].period === period
+                           && state.sections[i].on_days.indexOf(block) !== -1) {
+                r = state.sections[i];
+            }
+        });
+        return r;
+    };
+    m.needSection = function(name, period) {
+        var r = true;
+        state.sections.forEach( function(i) {
+            if (i.name === name && i.period === period) {
+                r = false;
+            }
+        });
+        
+        return r;
+    };
+    m.findSection = function(name, period) {
+        var r = null;
+        state.sections.forEach( function(i) {
+            if (i.name === name && i.period === period) {
+                r = i;
+            }
+        });
+        
+        return r;
     };
     
     m.switchTo = function(t) {
@@ -58,130 +92,176 @@
         }
     };
     
-    var scheduleTableEvent = function(e) {
-        var i, t = $(e.target);
-        
-        if (t.is(":first-child") || t.parent().prop("tagName") === "THEAD"
-                                                || t.prop("tagName") !== "TD") {
-            // if the selected element is first in the row, do nothing
-            // or if element is in first row
+    m.classListEvent = function(e) {
+        if (!$(e.target).is("#class-list li")) {
+            $(e.target).parent().trigger("click");
             return;
         }
-        e.preventDefault();
         
-        i = parseInt(t.attr("data-section"), 10) || 0;
-        // increment i and wrap on overflow
-        i = (i + 1) % (state.preps.length + 1);
-        t.attr("data-section", i);
-        if (i > 0) {
-            t.text(state.preps[i - 1]);
+        var t = $(e.target);
+        t.parent().find(".selected").removeClass("selected");
+        
+        t.addClass("selected");
+        
+        $("#prep-styler-div").slideDown();
+        $("#prep-styler").val( state.style[t.attr("data-prep")] || "white" );
+        $("#prep-styler").attr("data-prep", t.attr("data-prep"));
+    };
+    
+    var clickTableEvent = function(e) {
+        if (!$(e.target).is("#teacher-schedule tbody td:not(:first-child)")) {
+            $(e.target).parent().trigger("click");
+            return;
+        }
+        var prep = $("#class-list").find(".selected");
+        var period, block, s;
+        
+        if (prep.length === 0) {
+            return;
+        }
+        
+        prep = prep.eq(0).attr("data-prep");
+        $(e.target).attr("data-prep", state.preps.indexOf(prep)).text(prep);
+        
+        block = $(e.target).attr("data-block");
+        period = parseInt($(e.target).attr("data-period"), 10);
+        s = m.getSection(block, period);
+        if (s && s.name !== prep) {
+            // if this spot is covered
+            Section.prototype.removeBlock.call(s, block);
+            // TODO: MEMORY LEAK; the section might not be meaningful anymore
+        }
+        
+        if (m.needSection(prep, parseInt($(e.target).attr("data-period"), 10))){
+            // if not in row
+            state.sections.push( new Section(prep,
+                                             $(e.target).attr("data-period"),
+                            [params.reverser[$(e.target).attr("data-block")]]
+                                             ));
         } else {
-            // 0 represents no section this period
-            t.text("");
+            // it must be in row and not covered
+            m.findSection(prep, period).on_days.push(params.reverser[block]);
         }
     };
     
-    var scheduleAddSectionEvent = function(e) {
-        // assume element with event is a <tr>
-        var div, i, plus, preps = state.preps;
-        
-        if ($(document.activeElement).parent().parent()[0] === this) {
-            // do nothing if currently adding a class
-            return;
-        }
-        
-        if (e.target.tagName.toLowerCase() === "td"
-                                                && $(e.target).text() !== "+") {
-            // if selected is not add new +, it must be deleted
-            $(e.target).remove();
-            // remove this section from the preps list
-            preps.splice(preps.indexOf($(e.target).text()), 1);
-            return;
-        }
-        
-        plus = $(e.target);
-        plus.detach();
-        
-        div = $("<td>");
-        div.appendTo( this );
-        
-        i = $("<input>", {"type": "text"});
-        i.appendTo(div);
-        i.focus();
-        i.blur( function() {
-            if (i.val() === "") {
-                i.parent().remove();
-                return;
-            }
-            
-            i.parent().text(i.val());
-            preps.push(i.val());
-            i.remove();
-        });
-        
-        plus.appendTo($(this));
-    };
-    
-    /* The div to place the table/generated content into */
-    m.generateScheduleTab = function(div) {
-        var table, thead, tbody, row, td,
-            classList,
-            i, j;
-        
-        div = $(div);
+    m.generateScheduleTab = function() {
+        "use_strict";
+        var prepList = $("#class-list"),
+            div = $("#teacher-schedule-div"),
+            table, thead, tbody, row, td, i, styler = $("#prep-styler-div");
+        prepList.empty();
         
         div.empty();
         
-        // create the class list
-        classList = $("<ul>", {"class": "class-list"});
-        div.append(classList);
-        classList.append( $("<li>").append( $("<span>").text("+") ) );
+        styler.hide();
         
-        // attach the event handler
-        classList.click( scheduleAddSectionEvent );
+        // fill in the list with each prep
+        state.preps.forEach( function(v) {
+            i = $("<li>");
+            i.attr("data-prep", v);
+            $("<span>").text(v).appendTo(i);
+            
+            prepList.append( i );
+        });
         
-        // create the schedule table
-        table = $("<table>", {"class": "teacher-schedule"});
+        // attach create handler
+        $("#class-list-add-new").click( function() {
+            var l = $("<li>");
+            l.appendTo(prepList);
+            
+            var i = $("<input>", {"type": "text"});
+            i.appendTo(l);
+            i.focus();
+            i.blur( function() {
+                var newPrep = i.val();
+                if (newPrep === "") {
+                    // remove the list item if the person did nothing
+                    i.parent().remove();
+                    return;
+                }
+                // otherwise add the new prep and remove the input
+                i.parent().append( $("<span>").text(newPrep) );
+                i.parent().attr("data-prep", newPrep);
+                state.preps.push(newPrep);
+                i.remove();
+            });
+        });
+        
+        // attach delete handler
+        $("#class-list-remove-selected").click( function() {
+            var s = $("#class-list").find(".selected");
+            state.preps.splice(
+                             state.preps.indexOf(s.eq(0).attr("data-prep")), 1);
+            s.remove();
+        });
+        
+        table = $("<table>", {"id": "teacher-schedule"});
         div.append(table);
         
         thead = $("<thead>");
         table.append(thead);
-        
-        tbody = $("<tbody>", {"id": "teacher-schedule"});
+        tbody = $("<tbody>");
         table.append(tbody);
         
-        // build the header
-        for (i=0; i < params.blocks.length + 1; i+=1) {
-            td = $("<td>");
-            if (i > 0) {
-                // fill in the header with each block
-                td.text(params.blocks[i-1]);
+        // attach event handlers
+        table.click( clickTableEvent );
+        table.on("contextmenu", function(e) {
+            var r, t = $(e.target);
+            
+            e.preventDefault();
+            if (t.is("#teacher-schedule tbody td:not(:first-child)")){
+                // right mouse button was pressed
+                t.attr("data-prep", "").text("");
+                r = m.getSection(t.attr("data-block"),
+                                 parseInt(t.attr("data-period"), 10));
+                console.log(r);
+                if (r) {
+                    Section.prototype.removeBlock.call(r, 
+                                         params.reverser[t.attr("data-block")]);
+                    if (r.on_days.length === 0) {
+                        state.sections.splice(state.sections.indexOf(r), 1);
+                    }
+                }
+                console.log(r);
+            } else {
+                $(e.target).parent().trigger("mousedown");
             }
-            thead.append(td);
-        }
+        });
         
+        row = $("<tr>");
+        row.appendTo(thead);
+        // append a place holder for the first column
+        row.append($("<td>"));
+        // load in the blocks and fill the header
+        params.blocks.forEach( function(v) {
+            row.append( $("<td>").text(v) );
+        });
         
-        // build the tbody; for each period
+        // build the table and fill it with sections
         for (i=0; i < params.periods; i+=1) {
             row = $("<tr>");
-            tbody.append(row);
-            // build the row, td for each day
-            for (j=0; j < params.blocks.length + 1; j+=1) {
+            row.appendTo(tbody);
+            
+            // append the period number
+            row.append($("<td>").text(i+1));
+            
+            params.blocks.forEach( function(b) {
                 td = $("<td>");
-                row.append(td);
-                if (j > 0) {
-                    td.attr("data-section", "0");
-                    td.attr("data-index", getPrepIndex(j-1, i).toString());
-                } else {
-                    td.text(i + 1);
+                td.appendTo(row);
+                td.attr("data-block", b);
+                td.attr("data-period", i+1);
+                td.attr("data-prep", "");
+                var r = m.getSection(b, i+1);
+                if (r) {
+                    td.text(r.name)
+                    td.attr("data-prep", r.name);
                 }
-            }
-        }
+            });
         
-        // attach the event handler
-        table.click( m.scheduleTableEvent );
+        }
     };
     
+    /*
     var readScheduleRow = function(row) {
         var sections = {}, period, day, prep;
         row = $(row).children().slice(1);
@@ -218,7 +298,7 @@
         });
         
         state.sections = sections;
-    };
+    };*/
     
     var loadCalendar = function(calendarObject) {
         var t = calendarObject,
@@ -294,13 +374,23 @@ $(document).ready( function() {
     });
     
     program.switchTo(program.state.defaultTab);
-    program.generateScheduleTab($("#schedule-table"));
+    
+    $("#class-list").click( program.classListEvent );
+    $("#schedule-button").click( function() {
+        program.generateScheduleTab();
+    });
+    $("#prep-styler").blur( function() {
+        program.state.style[$(this).attr("data-prep")] = $(this).val();
+    });
     
     // on click of the planner button, generate the main schedule
     $("#planner-button").click( function() {
-        /*
-        program.readSchedule($("#teacher-schedule"));
-        */
+        program.state.sections.forEach( function(i) {
+            if (program.state.style[i.name]) {
+                i.css = {backgroundColor: program.state.style[i.name]};
+            }
+        });
+        
         $("#planner").empty();
         createCalendar($("#planner")[0], program.state.sections,
                        program.state.skipWeekends);
@@ -321,7 +411,7 @@ $(document).ready( function() {
             }
             
             if (reset) {
-                program.generateScheduleTab($("#schedule-table"));
+                // do we need to wipe any data?
             }
         });
         // asign the default value

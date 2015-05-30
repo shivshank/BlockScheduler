@@ -16,12 +16,12 @@
         
         <div id="tabs">
             <div id="about" class="tab" data-name="About">
-                <h1>Navigation</h1>
+                <h1>Getting Started</h1>
                 <p>Use the tabs at the top to configure the program.</p>
                 <p>This program will build you a custom Planner, tailored to your class schedule and the school year!</p>
                 <p>Use the Settings tab to configure the output and the block schedule.</p>
                 <p>Use the Schedule tab to input your class schedule.</p>
-                <p>Use the Calendar tab to update any snow days or interuptions in the block schedule.</p>
+                <p>Use the Calendar tab to update any snow days or interruptions in the block schedule.</p>
                 <p>The resulting planner will appear under the Planner tab.</p>
                 <h1>Printing</h1>
                 <p>The planners are printable!</p>
@@ -42,6 +42,28 @@
                     <p><em>(By default, there are seven periods so you can fit your lunch onto the schedule. If you don't put your lunch, just ignore the seventh period.)</em></p>
                 </div>
                 <div id="schedule-table">
+                    <div id="prep-styler-div">
+                        <p>You may type a background color for your class.</p>
+                        <input id="prep-styler" type="text" value="white">
+                    </div>
+                    <div id="class-list-div">
+                        <button id="class-list-add-new">+</button>
+                        <ul id="class-list">
+                            <li><span>Hello</span></li>
+                            <li><span>World</span></li>
+                        </ul>
+                        <button id="class-list-remove-selected">Remove Selected</button>
+                    </div>
+                    <div id="teacher-schedule-div">
+                        <table id="teacher-schedule">
+                            <thead>
+                                <tr><td>Test</td><td>Test</td><td>Test</td><td>Test</td><td>Test</td><td>Test</td><td>Test</td></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Test</td><td>Test</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             <div id="planner" class="tab" data-name="See it"></div>
