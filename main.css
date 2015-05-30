@@ -1,0 +1,388 @@
+html {
+	font-family: "Arial", sans-serif;
+	padding: 0px;
+	margin: 0px;
+	background: #EEEEEE;
+    
+    overflow: scroll;
+}
+
+#tab-header {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    margin: 0px;
+    padding: 15px;
+    
+    background: #333333;
+    
+    text-align: center;
+    
+    border-bottom: 5px solid #3366FF;
+}
+
+.tab-selector {
+    display: inline-block;
+    width: 100px;
+    padding: 10px;
+    margin: 2px 0px;
+    
+    background: #EEEEEE;
+    border: 1px solid #3366FF;
+    border-width: 2px 1px;
+    
+    text-align: center;
+    color: #333333;
+    
+    transition: box-shadow 1s;
+    
+    cursor: pointer;
+}
+.tab-selector:first-child {
+    border-radius: 3px 0px 0px 3px;
+    border-width: 2px 1px 2px 2px;
+}
+.tab-selector:last-child {
+    border-radius: 0px 3px 3px 0px;
+    border-width: 2px 2px 2px 1px;
+}
+.tab-selected {
+    box-shadow: 0px 0px 10px #3366FF;
+    position: relative;
+    z-index: 500;
+    top: -5px;
+    bottom: 5px;
+}
+
+.tab {
+    margin: 150px 250px;
+    width: 800px;
+}
+
+#about {
+    width: 580px;
+}
+
+.class-list {
+    list-style-type: none;
+}
+
+.class-list li {
+    list-style-type: none;
+    display: table-cell;
+    
+    border: none;
+    width: 150px;
+    height: 50px;
+    text-align: center;
+    vertical-align: middle;
+    
+    background: #333333;
+    color: #EEEEEE;
+    font-weight: bold;
+    
+    transition: background 0.5s;
+}
+.class-list li span {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.class-list :hover:last-child {
+    background: #3366FF;
+}
+.class-list td:hover:not(last-child) {
+    background: #FF5511;
+}
+
+table input {
+    text-align: center;
+    border: none;
+    padding: 15px;
+    font-weight: bold;
+}
+
+table.teacher-schedule {
+    border-collapse: collapse;
+    margin: 10px 0px;
+}
+
+table.teacher-schedule > thead {
+    font-weight: bold;
+    background: #333333;
+    color: #EEEEEE;
+}
+
+table.teacher-schedule td {
+    width: 150px;
+    height: 50px;
+    
+    text-align: center;
+    vertical-align: middle;
+    
+    border: 1px solid black;
+    
+    transition: box-shadow 0.5s;
+}
+
+table.teacher-schedule td:hover:not(:first-child) {
+    box-shadow: inset 0px 0px 10px #333333;
+    cursor: pointer;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+
+#stat-tab {
+	position: fixed;
+	bottom: 0px;
+	right: 100px;
+	width: 100px;
+	
+	text-align: center;
+	color: #FFF;
+	background: #444444;
+	
+	padding: 5px;
+	margin: 0px;
+	border-radius: 5px 5px 0px 0px;
+	box-shadow: 0px 5px 15px #333333;
+	
+	transition: bottom 0.5s, background 0.5s;
+	
+	z-index: 100;
+}
+
+#stat-tab:hover {
+	background: #3366FF;
+}
+
+#stat-box {
+	position: fixed;
+	bottom: -85px;
+	right: 100px;
+	padding: 5px;
+	
+	min-height: 75px;
+	height: 75px;
+	max-height: 75px;
+	overflow: hidden;
+	
+	background: #444444;
+	color: #FFF;
+	
+	margin: 0px;
+	width: 80%;
+	
+	border-radius: 5px 0px 0px 0px;
+	box-shadow: 0px 5px 15px #333333;
+	
+	transition: bottom 0.5s;
+	
+	z-index: 100;
+}
+
+#parameter-box {
+	position: fixed;
+	width: 250px;
+	top: 10%;
+	right: 100px;
+	background: #444444;
+	box-shadow: 2px 2px 15px #555555;
+	
+	padding: 10px;
+	
+	max-height: 80%;
+	overflow: auto;
+}
+
+#parameter-box button {
+	
+	padding: 10px;
+	margin: 15px auto;
+	background: #222222;
+	color: #FFFFFF;
+	border: none;
+	
+	transition: background 1s, box-shadow 1s;
+	-webkit-transition: background 1s, box-shadow 1s;
+}
+
+#parameter-box button:hover{
+	box-shadow: inset 0px 0px 15px #3366FF;
+}
+
+button.single {
+	display: block;
+}
+
+#parameter-box h1 {
+	text-align: center;
+	font-size: 1.5em;
+	color: #FFFFFF;
+}
+
+#block-selection {
+	text-align: center;
+}
+
+.selected {
+	background: #3366FF !important;
+}
+
+/* CALENDAR CONTAINERS */
+
+div#calendar {
+	width: 900px;
+}
+
+div.calendar-month > h1 {
+	text-align: center;
+}
+
+.calendar-table {
+	display: table;
+	border-collapse: collapse;
+	width: 700px;
+	margin: 10px auto;
+}
+
+tr.calendar-dow > td {
+	height: 30px;
+	text-align: center;
+    border: 1px solid black;
+    vertical-align: middle;
+}
+
+/* CALENDAR DAY */
+
+td.calendar-day {
+	border: 3px solid black;
+    border-width: 3px 1px 3px 1px;
+    
+	width: 100px;
+	padding: 0px;
+    
+	vertical-align: top;
+}
+
+.no-session {
+}
+
+.off-day {
+}
+
+.placeholder, .no-school {
+	background: #666666;
+}
+
+.calendar-day-header {
+    padding: 2px;
+    height: 1.2em;
+    font-size: 1em;
+    font-weight: bold;
+    
+    vertical-align: middle;
+    text-align: center;
+}
+
+.calendar-section {
+    font-size: 0.8em;
+    height: 0.9em;
+    
+    margin: 0px;
+    padding: 5px;
+    
+    border: 1px solid black;
+    border-width: 0px 0px 1px 0px;
+}
+
+.calendar-day-header + .calendar-section {
+    border-width: 1px 0px 1px 0px;
+}
+
+.calendar-section:last-child {
+    border-width: 0px 0px 0px 0px;
+}
+
+.settings-group {
+    display: inline-block;
+    width: 300px;
+    border: 1px solid black;
+    padding: 15px;
+    margin: 10px;
+    
+    background: #FFFFFF;
+    box-shadow: 5px 5px 15px #333333;
+    float: left;
+}
+
+#settings h1 {
+    text-align: center;
+}
+
+#settings label {
+    padding: 5px 0px;
+    font-style: italic;
+    float: left;
+    clear: left;
+}
+
+#settings input {
+    float: right;
+}
+
+.warning {
+    font-style: italic;
+    font-size: 0.8em;
+}
+
+@media print, (max-device-width: 9in){
+	html {
+		background: none;
+		margin: 0px;
+		padding: 0px;
+	}
+    
+	#tab-header {
+		display: none;
+	}
+    
+    .tab {
+        width: auto;
+        margin: 0px;
+        padding: 0px;
+    }
+    
+    #schedule-info{
+        display: none;
+    }
+    table.class-list {
+        display: none;
+    }
+    
+    .calendar {
+        width: 100%;
+        padding: 0px;
+        margin: 10px 0px 0px 0px;
+    }
+    
+	.calendar-month {
+		max-height: 10in;
+		padding: 0px;
+        margin: 0px;
+        
+		page-break-after: always;
+		page-break-inside: avoid;
+	}
+    
+    .calendar-month:last-child {
+        page-break-after: avoid;
+    }
+    
+    .calendar-table {
+        width: 8in;
+        margin: 0px auto;
+    }
+}
