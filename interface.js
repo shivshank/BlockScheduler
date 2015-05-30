@@ -59,6 +59,36 @@
         
         return r;
     };
+    m.removeSection = function(block, period) {
+        var s = m.getSection(block, period);
+        console.log(block, period, s);
+        if (s === null) {
+            return;
+        }
+        
+        Section.prototype.removeBlock.call(s, params.reverser[block]);
+        if (s.on_days.length === 0) {
+            state.sections.splice(state.sections.indexOf(s), 1);
+        }
+    };
+    m.setSection = function(name, block, period) {
+        var s = m.getSection(block, period);
+        if (s && s.name !== name) {
+            // remove previous prep
+            m.removeSection(block, period);
+        }
+        
+        // if we need to add a section for prep on this period
+        s = m.findSection(name, period);
+        if (s === null) {
+            s = new Section(name, period, []);
+            state.sections.push( s );
+        }
+        
+        if (s.name === name && s.on_days.indexOf(params.reverser[block]) === -1) {
+            s.on_days.push(params.reverser[block]);
+        }
+    };
     
     m.switchTo = function(t) {
         // update buttons
@@ -125,23 +155,7 @@
         
         block = $(e.target).attr("data-block");
         period = parseInt($(e.target).attr("data-period"), 10);
-        s = m.getSection(block, period);
-        if (s && s.name !== prep) {
-            // if this spot is covered
-            Section.prototype.removeBlock.call(s, block);
-            // TODO: MEMORY LEAK; the section might not be meaningful anymore
-        }
-        
-        if (m.needSection(prep, parseInt($(e.target).attr("data-period"), 10))){
-            // if not in row
-            state.sections.push( new Section(prep,
-                                             $(e.target).attr("data-period"),
-                            [params.reverser[$(e.target).attr("data-block")]]
-                                             ));
-        } else {
-            // it must be in row and not covered
-            m.findSection(prep, period).on_days.push(params.reverser[block]);
-        }
+        m.setSection(prep, block, period);
     };
     
     m.generateScheduleTab = function() {
@@ -211,18 +225,9 @@
             e.preventDefault();
             if (t.is("#teacher-schedule tbody td:not(:first-child)")){
                 // right mouse button was pressed
+                m.removeSection(t.attr("data-block"),
+                                parseInt(t.attr("data-period"), 10));
                 t.attr("data-prep", "").text("");
-                r = m.getSection(t.attr("data-block"),
-                                 parseInt(t.attr("data-period"), 10));
-                console.log(r);
-                if (r) {
-                    Section.prototype.removeBlock.call(r, 
-                                         params.reverser[t.attr("data-block")]);
-                    if (r.on_days.length === 0) {
-                        state.sections.splice(state.sections.indexOf(r), 1);
-                    }
-                }
-                console.log(r);
             } else {
                 $(e.target).parent().trigger("mousedown");
             }
