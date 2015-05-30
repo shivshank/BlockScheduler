@@ -354,5 +354,13 @@ var program_save = {
         "Study Hall Late",
         "US",
         "Global 9H"
-    ]
+    ],
+    "style": {
+        "Western Civ/WW2": "green",
+        "ACE": "yellow",
+        "Study Hall": "orange",
+        "Study Hall Late": "orange",
+        "US": "blue",
+        "Global 9H": "red"
+    }
 };
