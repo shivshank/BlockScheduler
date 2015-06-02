@@ -39,16 +39,23 @@ var tableGrid = {
             $(v).children().addClass(tableDatas);
         });
     },
-    forEachCell: function(callback) {
-        var x, y;
+    // call callback on [start, end) bounds with (jQuery cell, jQuery row, x, y)
+    forEachCell: function(callback, startX, startY, endX, endY) {
+        var x, y,
+            startX = startX || 0, startY = startY || 0,
+            endX = endX || 0, endY = endY || 0;
+        
+        // OPTOMIZE: Stop iterating over cells out of bounds
         
         y = 0;
         this.body.children().each( function(i, v) {
             // for each table row
             x = 0;
             $(v).children().each( function(index, value) {
-                // for each td
-                callback($(value), $(v), x, y);
+                // for each td in bounds
+                if (x >= startX && x < endX && y >= startY && y < endY) {
+                    callback($(value), $(v), x, y);
+                }
                 x += 1;
             });
             y += 1;
