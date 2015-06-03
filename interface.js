@@ -61,7 +61,7 @@
     };
     m.removeSection = function(block, period) {
         var s = m.getSection(block, period);
-        console.log(block, period, s);
+        
         if (s === null) {
             return;
         }
