@@ -10,7 +10,7 @@ var Calendar = function(start, end) {
         setDay: []
     };
 };
-Calendar.prototype.register = function(event, func) {
+Calendar.prototype.on = function(event, func) {
     this.callbacks[event].push(func);
 };
 Calendar.prototype.fire = function(event, args) {
@@ -133,6 +133,20 @@ var Schedule = function(days, periods) {
         // f(day, period, section)
         setSection: []
     };
+};
+Schedule.prototype.toJSON = function(spaces) {
+    var s = {};
+    
+    s.days = this.days;
+    s.periods = this.periods;
+    s.array = this.array;
+    
+    return JSON.stringify(s, null, spaces || 0);
+};
+Schedule.prototype.fromJSON = function(j) {
+    this.days = j.days;
+    this.periods = j.periods;
+    this.array = j.array;
 };
 Schedule.prototype.on = function(event, func) {
     this.callbacks[event].push(func);
