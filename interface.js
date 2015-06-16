@@ -374,7 +374,7 @@ $(window).unload( function(e) {
 
 $(window).on('message', function(e) {
     // jquery doesn't support post message?
-    console.log("Received calendar data!");
+    console.log("Received calendar data!", data);
     var data = e.originalEvent.data;
     program.loadCalendar(JSON.parse(data));
 });
