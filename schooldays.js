@@ -272,10 +272,10 @@ var params = {
     blocks: ["A", "B", "C", "D", "E", "F"],
     reverser: null,
     calendar: {
-        no_school: null,
-        no_session: null,
-        set_day: null,
-        half_day: null
+        no_school: [],
+        no_session: [],
+        set_day: [],
+        half_day: []
     },
     // dictionary of actual school days
     days: null, 

@@ -5,6 +5,7 @@
     m.options = options;
     
     var state = {
+        saving: true,
         defaultTab: "about",
         activeTab: null,
         tabs: [],
@@ -316,6 +317,7 @@
         
         params.calendar = o;
     };
+    m.loadCalendar = loadCalendar;
     
     var saveCalendar = function() {
         var o = {},
@@ -327,6 +329,7 @@
         
         Object.keys(params.calendar).forEach( function(v) {
             o[v] = [];
+            
             params.calendar[v].forEach( function(d) {
                 o[v].push( convert(d) );
             })
@@ -359,8 +362,39 @@ var formatDate = function(d){
     return months[d.getMonth()] + " " + d.getDate() + " " + d.getFullYear();
 };
 
+$(window).unload( function(e) {
+    if (window.localStorage && program.state.saving === true) {
+        localStorage["shivshank.bs.OLD-SAVE"] = JSON.stringify(
+                                                           program.saveState());
+        return;
+    }
+    
+    return "Your changes will not be saved! Continue?";
+});
+
+$(window).on('message', function(e) {
+    // jquery doesn't support post message?
+    console.log("Received calendar data!");
+    var data = e.originalEvent.data;
+    program.loadCalendar(JSON.parse(data));
+});
+
 $(document).ready( function() {
-    program.loadState(program_save);
+    if (!window.localStorage) {
+        alert("You need to update your browser " +
+              "if you want to save your changes.");
+    }
+    
+    // load any locally saved calendar or schedule
+    if (window.localStorage && localStorage["shivshank.bs.OLD-SAVE"]) {
+        program.loadState(JSON.parse(localStorage["shivshank.bs.OLD-SAVE"]));
+    }
+    
+    // try to load a calendar from the server
+    $.get( "calendar.json", function(data) {
+        // use getJSON maybe instead?
+        program.loadCalendar(JSON.parse(data));
+    }, "text");
     
     // create buttons and initialize them
     var tab_target = $("#tab-header"),
