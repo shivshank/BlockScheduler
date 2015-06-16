@@ -362,20 +362,26 @@ var formatDate = function(d){
     return months[d.getMonth()] + " " + d.getDate() + " " + d.getFullYear();
 };
 
-$(window).unload( function(e) {
+var save = function() {
     if (window.localStorage && program.state.saving === true) {
         localStorage["shivshank.bs.OLD-SAVE"] = JSON.stringify(
                                                            program.saveState());
-        return;
+        return true;
+    } else {
+        return false;
     }
-    
-    return "Your changes will not be saved! Continue?";
+};
+
+$(window).unload( function(e) {
+    if (!save()) {
+        return "Your changes will not be saved! Continue?";
+    }
 });
 
 $(window).on('message', function(e) {
     // jquery doesn't support post message?
-    console.log("Received calendar data!", data);
     var data = e.originalEvent.data;
+    console.log("Received calendar data!");
     program.loadCalendar(JSON.parse(data));
 });
 
@@ -429,6 +435,7 @@ $(document).ready( function() {
                 i.css = {backgroundColor: program.state.style[i.name]};
             }
         });
+        save();
         
         $("#planner").empty();
         createCalendar($("#planner")[0], program.state.sections,
