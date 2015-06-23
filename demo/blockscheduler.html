@@ -26,9 +26,9 @@
         </iframe>
         
         <script>
-            // load calendar file from this server and send it to the iframe
-            var uploadCalendar = function() {
-                $.get("calendar.json", function(data) {
+            // load school file from this server and send it to the iframe
+            var upload = function() {
+                $.get("school.txt", function(data) {
                     // need to secure the targetOrigin argument...
                     // (but its not like we're sending passwords, were sending
                     // public data...)

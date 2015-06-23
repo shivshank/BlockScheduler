@@ -1,3 +1,20 @@
+var parseDataText = function(txt) {
+    // Use this function to read the data files created by Calendar and Schedule
+    var lines = txt.replace("\r\n", "\n").split("\n");
+    var field = "", out = {};
+    
+    lines.forEach( function(i) {
+        if (i[0] !== "#" && i[0] !== ":" && i.trim() != "" && field) {
+            out[field].push(i);
+        } else if (i[0] === ":") {
+            field = i.slice(1);
+            out[field] = [];
+        }
+    });
+    
+    return out;
+};
+
 var Calendar = function(start, end) {
     this.start = start;
     this.end = end;
@@ -65,6 +82,27 @@ Calendar.prototype.fromJSON = function(j) {
     this.start = convert(t.start);
     this.end = convert(t.end);
 };
+Calendar.prototype.fromDataText = function(txt) {
+    var o = parseDataText(txt);
+    this.start = o.START[0];
+    this.end = o.END[0];
+    
+    var mapper = function(i) {
+        return day(i.trim());
+    };
+    
+    this._data[this.NO_SCHOOL] = o["NO SCHOOL"].map(mapper);
+    this._data[this.NO_CLASS] = o["NO CLASS"].map(mapper);
+    
+    this._data[this.SET_DAY] = o["SET DAY"].map(function(i) {
+        var d = i.trim.split("|");
+        return day(d[0].trim(), {block: d[1].trim()});
+    });
+    this._data[this.HALF_DAY] = o["HALF DAY"].map(function(i) {
+        var d = i.trim.split("|");
+        return day(d[0].trim(), {session: d[1].trim()});
+    });
+};
 Calendar.prototype.isDay = function(day_type, day) {
     var i;
     
@@ -120,7 +158,7 @@ Calendar.prototype.forEachSchoolDay = function(start, end, func, start_block) {
 };
 
 var Schedule = function(days, periods) {
-    this.days = days;
+    this.days = days.slice(), periods.slice();
     this.periods = periods;
     this.array = [];
     // the set of all sections in the array (key) and its occurrences (value)
