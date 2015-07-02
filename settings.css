@@ -32,3 +32,13 @@
 #settings input {
     float: right;
 }
+
+#s-save-text {
+    width: 100%;
+    height: 10em;
+    margin: 15px 0px;
+}
+
+#s-save-button {
+    margin: 0px 10px;
+}
