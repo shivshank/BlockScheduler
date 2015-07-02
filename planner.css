@@ -1,0 +1,90 @@
+#planner {
+	width: 900px;
+}
+
+.planner h1 {
+	text-align: center;
+}
+
+.planner-table {
+	/*border-collapse: collapse;*/
+	width: 700px;
+	margin: 10px auto;
+}
+
+tr.planner-dow > td {
+	height: 30px;
+	text-align: center;
+    border: 1px solid black;
+    vertical-align: middle;
+}
+
+/* PLANNER CALENDAR DAY */
+td.planner-day {
+	border: 3px solid black;
+    border-width: 3px 1px 3px 1px;
+    
+	width: 100px;
+	padding: 0px;
+    
+	vertical-align: top;
+}
+
+.planner .placeholder, .planner .no-school {
+	background: #666666;
+}
+
+.planner-day-header {
+    padding: 2px;
+    height: 1.2em;
+    font-size: 1em;
+    font-weight: bold;
+    
+    vertical-align: middle;
+    text-align: center;
+}
+
+.planner-section {
+    font-size: 0.8em;
+    height: 0.9em;
+    
+    margin: 0px;
+    padding: 5px;
+    
+    border: 1px solid black;
+    border-width: 0px 0px 1px 0px;
+}
+
+.planner-day-header + .planner-section {
+    border-width: 1px 0px 1px 0px;
+}
+
+.planner-section:last-child {
+    border-width: 0px 0px 0px 0px;
+}
+
+@media print, (max-device-width: 9in) {
+    .planner {
+        width: 100%;
+        padding: 0px;
+        margin: 10px 0px 0px 0px;
+    }
+    
+	.planner-month {
+		max-height: 10in;
+		padding: 0px;
+        margin: 0px;
+        
+		page-break-after: always;
+		page-break-inside: avoid;
+	}
+    
+    .planner-month:last-child {
+        page-break-after: avoid;
+    }
+    
+    .planner-table {
+        width: 8in;
+        margin: 0px auto;
+    }
+}

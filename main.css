@@ -1,346 +1,83 @@
 html {
-	font-family: "Arial", sans-serif;
+	font-family: "Lucida Sans Unicode", "Lucida Grande", "Arial", sans-serif;
 	padding: 0px;
 	margin: 0px;
 	background: #EEEEEE;
     
-    overflow: scroll;
+    overflow-y: scroll;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Georgia", "Times New Roman", serif;
+    text-align: center;
 }
 
 #tab-header {
-    position: absolute;
+    position: fixed;
     left: 0px;
-    right: 0px;
+    bottom: 0px;
     top: 0px;
+    width: 160px;
     margin: 0px;
-    padding: 15px;
+    padding: 0px;
     
-    background: #333333;
+    background: #222;
     
-    text-align: center;
+    border-right: 5px solid #EE2222;
+}
+
+#tab-title {
+    display: inline-block;
+    margin: 10px;
     
-    border-bottom: 5px solid #3366FF;
+    color: #EEE;
+    text-align: left;
+    
+    font-family: Tahoma, Geneva, serif;
+    font-weight: normal;
+}
+
+#tab-container {
+    display: inline-block;
 }
 
 .tab-selector {
     display: inline-block;
-    width: 100px;
-    padding: 10px;
-    margin: 2px 0px;
     
-    background: #EEEEEE;
-    border: 1px solid #3366FF;
-    border-width: 2px 1px;
+    padding: 0px;
+    margin: 10px 0px;
+    width: 100%;
     
     text-align: center;
-    color: #333333;
-    
-    transition: box-shadow 1s;
-    -webkit-transition: box-shadow 1s;
+    color: #EEE;
     
     cursor: pointer;
+    
+    transition: padding 0.2s;
+    -webkit-transition: padding 0.2s;
 }
-.tab-selector:first-child {
-    border-radius: 3px 0px 0px 3px;
-    border-width: 2px 1px 2px 2px;
-}
-.tab-selector:last-child {
-    border-radius: 0px 3px 3px 0px;
-    border-width: 2px 2px 2px 1px;
-}
+
 .tab-selected {
-    box-shadow: 0px 0px 10px #3366FF;
-    position: relative;
-    z-index: 500;
-    top: -5px;
-    bottom: 5px;
+    font-weight: bold;
+    border: 2px solid #EE2222;
+    border-width: 2px 0px;
+    padding: 10px 0px;
 }
 
 .tab {
-    margin: 150px 250px;
-    width: 800px;
+    margin: 50px 0px 100px 250px;
+}
+
+.info {
+    width: 650px;
+    margin: 0px auto;
 }
 
 #about {
-    width: 580px;
-}
-
-#schedule {
-    margin: 150px 0px 0px 250px;
-    width: auto;
-}
-
-#schedule-info {
-    width: 800px;
-}
-
-#class-list-div {
-    float: left;
-    width: 100px;
-    margin: 10px;
-    border: 1px solid black;
-}
-
-#class-list {
-    list-style-type: none;
-    padding: 0px;
-    margin: 0px;
-}
-
-#class-list-div button {
-    display: block;
-    margin: 0px;
-    width: 100%;
-    
-    border: none;
-    transition: background 0.5s;
-    -webkit-transition: background 0.5s;
-    
-    min-height: 25px;
-}
-#class-list-add-new {
-    background: #3366FF;
-}
-#class-list-add-new:hover {
-    background: #88AAFF;
-}
-#class-list-remove-selected {
-    background: #FF3300;
-}
-#class-list-remove-selected:hover {
-    background: #FF5533;
-}
-
-#class-list li {
-    list-style-type: none;
-    
-    display: block;
-    padding: 5px 0px;
-    margin: 5px 0px;
-    border: none;
-    
-    text-align: center;
-    
-    color: black;
-    
-    transition: background 0.5s;
-    -webkit-transition: background 0.5s;
-}
-
-#class-list li span {
-    width: 100%;
-    text-align: center;
-}
-
-#class-list li:hover {
-    background: #3366FF;
-}
-#class-list .selected {
-    background: #3366Ff;
-    font-weight: bold;
-}
-
-#class-list li input {
-    text-align: center;
-    border: none;
-    padding: 15px;
-    font-weight: bold;
-}
-
-#prep-styler-div {
-    margin: 10px;
-    padding: 5px;
-    
-    width: 800px;
-    text-align: center;
-    border: 1px solid;
-}
-
-#teacher-schedule-div {
-    float: left;
-    margin: 10px;
-}
-
-#teacher-schedule {
-    border-collapse: collapse;
-}
-
-#teacher-schedule > thead {
-    font-weight: bold;
-    background: #333333;
-    color: #EEEEEE;
-}
-
-#teacher-schedule td {
-    width: 100px;
-    height: 50px;
-    
-    text-align: center;
-    vertical-align: middle;
-    
-    border: 1px solid black;
-    
-    transition: box-shadow 0.5s;
-    -webkit-transition: box-shadow 0.5s;
-}
-
-#teacher-schedule tbody td:hover:not(:first-child) {
-    box-shadow: inset 0px 0px 10px #333333;
-    cursor: pointer;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-}
-
-/* Settings Tab Styles */
-
-#parameter-box {
-	position: fixed;
-	width: 250px;
-	top: 10%;
-	right: 100px;
-	background: #444444;
-	box-shadow: 2px 2px 15px #555555;
-	
-	padding: 10px;
-	
-	max-height: 80%;
-	overflow: auto;
-}
-
-#parameter-box button {
-	
-	padding: 10px;
-	margin: 15px auto;
-	background: #222222;
-	color: #FFFFFF;
-	border: none;
-	
-	transition: background 1s, box-shadow 1s;
-	-webkit-transition: background 1s, box-shadow 1s;
-}
-
-#parameter-box button:hover{
-	box-shadow: inset 0px 0px 15px #3366FF;
 }
 
 button.single {
 	display: block;
-}
-
-#parameter-box h1 {
-	text-align: center;
-	font-size: 1.5em;
-	color: #FFFFFF;
-}
-
-#block-selection {
-	text-align: center;
-}
-
-.selected {
-	background: #3366FF !important;
-}
-
-/* CALENDAR CONTAINERS */
-
-div#calendar {
-	width: 900px;
-}
-
-div.calendar-month > h1 {
-	text-align: center;
-}
-
-.calendar-table {
-	display: table;
-	border-collapse: collapse;
-	width: 700px;
-	margin: 10px auto;
-}
-
-tr.calendar-dow > td {
-	height: 30px;
-	text-align: center;
-    border: 1px solid black;
-    vertical-align: middle;
-}
-
-/* CALENDAR DAY */
-
-td.calendar-day {
-	border: 3px solid black;
-    border-width: 3px 1px 3px 1px;
-    
-	width: 100px;
-	padding: 0px;
-    
-	vertical-align: top;
-}
-
-.no-session {
-}
-
-.off-day {
-}
-
-.placeholder, .no-school {
-	background: #666666;
-}
-
-.calendar-day-header {
-    padding: 2px;
-    height: 1.2em;
-    font-size: 1em;
-    font-weight: bold;
-    
-    vertical-align: middle;
-    text-align: center;
-}
-
-.calendar-section {
-    font-size: 0.8em;
-    height: 0.9em;
-    
-    margin: 0px;
-    padding: 5px;
-    
-    border: 1px solid black;
-    border-width: 0px 0px 1px 0px;
-}
-
-.calendar-day-header + .calendar-section {
-    border-width: 1px 0px 1px 0px;
-}
-
-.calendar-section:last-child {
-    border-width: 0px 0px 0px 0px;
-}
-
-.settings-group {
-    display: inline-block;
-    width: 300px;
-    border: 1px solid black;
-    padding: 15px;
-    margin: 10px;
-    
-    background: #FFFFFF;
-    box-shadow: 5px 5px 15px #333333;
-    float: left;
-}
-
-#settings h1 {
-    text-align: center;
-}
-
-#settings label {
-    padding: 5px 0px;
-    font-style: italic;
-    float: left;
-    clear: left;
-}
-
-#settings input {
-    float: right;
 }
 
 .warning {
@@ -348,12 +85,58 @@ td.calendar-day {
     font-size: 0.8em;
 }
 
-@media print, (max-device-width: 9in){
+thead {
+    font-weight: bold;
+    background: #333333;
+    color: #EEEEEE;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td {
+    border: 1px solid #000;
+}
+ 
+.cp {
+    width: 650px;
+    margin: 5px auto;
+}
+ 
+.cp-radio-container {
+    display: inline-block;
+}
+
+.cp-radio-container input[type="radio"] {
+    display: none;
+}
+
+.cp-radio-container input[type="radio"] + label {
+    display: inline-block;
+    width: 100px;
+    padding: 5px;
+    border: 1px solid #000;
+    text-align: center;
+    cursor: pointer;
+}
+
+/*
+    Use this format to style the selected button
+#container input[type="radio"]:checked + label {
+}
+*/
+
+@media print, (max-device-width: 9in), (max-width: 9in) {
 	html {
 		background: none;
 		margin: 0px;
 		padding: 0px;
 	}
+    
+    .cp {
+        display: none;
+    }
     
 	#tab-header {
 		display: none;
@@ -365,34 +148,13 @@ td.calendar-day {
         padding: 0px;
     }
     
-    #schedule-info{
+    thead {
+        font-weight: bold;
+        background: #FFFFFF;
+        color: #000;
+    }
+    
+    .info {
         display: none;
-    }
-    table.class-list {
-        display: none;
-    }
-    
-    .calendar {
-        width: 100%;
-        padding: 0px;
-        margin: 10px 0px 0px 0px;
-    }
-    
-	.calendar-month {
-		max-height: 10in;
-		padding: 0px;
-        margin: 0px;
-        
-		page-break-after: always;
-		page-break-inside: avoid;
-	}
-    
-    .calendar-month:last-child {
-        page-break-after: avoid;
-    }
-    
-    .calendar-table {
-        width: 8in;
-        margin: 0px auto;
     }
 }

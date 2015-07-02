@@ -3,36 +3,49 @@
     <head>
         <meta charset="utf-8">
         <title>The Block Scheduler</title>
+        
         <link rel="stylesheet" type="text/css" href="main.css">
+        <link rel="stylesheet" type="text/css" href="schedule.css">
+        <link rel="stylesheet" type="text/css" href="planner.css">
+        <link rel="stylesheet" type="text/css" href="settings.css">
+        <link rel="stylesheet" type="text/css" href="calendar.css">
+        
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
         <script src="schooldays.js"></script>
+        <script src="tablegrid.js"></script>
         <script src="calendarbuilder.js"></script>
         <script src="interface.js"></script>
+        <script src="tabs.js"></script>
     </head>
     <body>
         <div id="tab-header">
+            <h1 id="tab-title">Block Scheduler</h1>
+            <div id="tab-container">
+            </div>
         </div>
         
         <div id="tabs">
-            <div id="about" class="tab" data-name="About">
-                <h1>Getting Started</h1>
-                <p>Use the tabs at the top to configure the program.</p>
-                <p>This program will build you a custom Planner, tailored to your class schedule and the school year!</p>
-                <p>Use the Settings tab to configure the output and the block schedule.</p>
-                <p>Use the Schedule tab to input your class schedule.</p>
-                <p>Use the Calendar tab to update any snow days or interruptions in the block schedule.</p>
-                <p>The resulting planner will appear under the Planner tab.</p>
-                <h1>Printing</h1>
-                <p>The planners are printable!</p>
-                <p>The program will do its best to make sure each month fits on its own page, however it might not always work things out perfectly.</p>
-                <p><strong>Be sure to use print preview</strong>. If your browser has a shrink to fit option, enable it, and make sure to also <strong>enable print backgrounds</strong> if you want to see any shading or colors. </p>
-                <p>Some browsers let you disable the headers and footers. It is also recommended that you reduce the margins as much as possible.</p>
-                <p>If shrink to fit fails to fit each month onto its own page, try adjusting the scale until it does fit.</p>
-                <p>Each tab is printable, so be sure to select the planner tab if you want to print your year's calendar. This program could also be used to print your block schedule or a one page calendar.</p>
-                <p>For best results, use Firefox or Chrome on PC/Windows and Safari or Chrome on Mac.</p>
+            <div id="about" class="tab" data-name="About it">
+                <div class="info">
+                    <h1>Getting Started</h1>
+                    <p>Use the tabs on the left to navigate the program.</p>
+                    <p>This program will build you a custom calendar for the year, tailored to your class schedule! You can also generate weekly lesson plan templates under "See it."</p>
+                    <p>Use the build tab to input your class schedule.</p>
+                    <p>Use the customize tab to configure more advanced settings.</p>
+                    <p>The resulting calendar planner will appear under the "See it" tab.</p>
+                    <p>If there's any interruptions like snow days or emergency cancellations, you can edit the schools calendar under "Snow Days."</p>
+                    <h1>Printing</h1>
+                    <p>The planners are printable!</p>
+                    <p>The program will do its best to make sure each month fits on its own page, however it might not always work things out perfectly.</p>
+                    <p><strong>Be sure to use print preview</strong>. If your browser has a shrink to fit option, enable it, and make sure to also <strong>enable print backgrounds</strong> if you want to see any shading or colors. </p>
+                    <p>Some browsers let you disable the headers and footers, such as the time of printing. It is also recommended that you reduce the margins as much as possible.</p>
+                    <p>If shrink to fit fails to fit each month onto its own page, try adjusting the scale until it does fit. 90% seems to work well.</p>
+                    <p>Each tab is printable, so be sure to select the "See it" tab if you want to print your yearly planner. This program could also be used to print your block schedule or a one page calendar.</p>
+                    <p>For best results, use Firefox or Chrome on PC/Windows and Safari on Mac.</p>
+                </div>
             </div>
             <div id="schedule" class="tab" data-name="Build it">
-                <div id="schedule-info">
+                <div class="info">
                     <h1>Class Schedule</h1>
                     <p>Fill out your class schedule. To begin, enter all your classes into the class list by hitting the big "+" sign.</p>
                     <p>Once all your classes are entered, enter your schedule by clicking in each cell. When you click, it will cycle through each one of your classes.</p>
@@ -48,20 +61,10 @@
                     <div id="class-list-div">
                         <button id="class-list-add-new">+</button>
                         <ul id="class-list">
-                            <li><span>Hello</span></li>
-                            <li><span>World</span></li>
                         </ul>
                         <button id="class-list-remove-selected">Remove Selected</button>
                     </div>
                     <div id="teacher-schedule-div">
-                        <table id="teacher-schedule">
-                            <thead>
-                                <tr><td>Test</td><td>Test</td><td>Test</td><td>Test</td><td>Test</td><td>Test</td><td>Test</td></tr>
-                            </thead>
-                            <tbody>
-                                <tr><td>Test</td><td>Test</td></tr>
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             </div>
@@ -83,12 +86,54 @@
                         <input id="s-end-day" type="text" /><br/>
                 </div>
                 <div class="settings-group">
-                    <button id="s-save-button">Get Save JSON</button>
                     <textarea id="s-save-text"></textarea>
-                    <p>To save your changes, first open the file "your_save.js" in a program, such as Microsoft Word. Delete everything in the file, but do not save yet. Click the "Get Save JSON" button above, and then copy and paste the new text into the Word file. Save the document, it might warn you about losing formatting, make sure you click okay.</p>
+                    <button id="s-save-button">Export Calendar</button>
+                    <p>Click export calendar to generate the save file for the current schedule. Only server admins need to do this.</p>
                 </div>
             </div>
             <div id="calendar" class="tab" data-name="Snow Days?">
+                <div class="info">
+                    <p>This page is for adding snow days. It can also be used to edit and play with the calendar. Changes will be automatically saved. If you do not want this, disable saving under settings.</p>
+                    <p>If the school calendar is not updated by an administrator, this page can also be used to build the entire calendar yourself.</p>
+                    <p>To edit the calendar, simply select a day type below and click a date on the calendar to set it to that day type.</p>
+                    <p>If you make a mistake and want to forget your changes, you can hit "erase calendar" under the customize tab.</p>
+                    <p class="warning">ADVANCED: You can export this calendar to a file from the settings page.</p>
+                </div>
+                <div id="calendar-cp" class="cp">
+                    <form>
+                        <label for="calendar-start-date">Start Date</label><input type="text" id="calendar-start-date" />
+                        <label for="calendar-end-date">End Date</label><input type="text" id="calendar-end-date" />
+                        <input type="submit" id="calendar-update" value="Refresh" />
+                    </form>
+                    
+                    <p>Select a day type below.</p>
+                    <div id="calendar-day-types" class="cp-radio-container">
+                        <input id="calendar-type-erase" type="radio" name="calendar-day-type" checked="checked" />
+                        <label for="calendar-type-erase">erase</label>
+                        <input id="calendar-type-holiday" type="radio" name="calendar-day-type" />
+                        <label for="calendar-type-holiday">holiday</label>
+                        <input id="calendar-type-set" type="radio" name="calendar-day-type" />
+                        <label for="calendar-type-set">set day</label>
+                        <input id="calendar-type-half" type="radio" name="calendar-day-type" />
+                        <label for="calendar-type-half">half day</label>
+                        <input id="calendar-type-noclass" type="radio" name="calendar-day-type" />
+                        <label for="calendar-type-noclass">no class</label>
+                    </div>
+                    <p class="calendar-tip" id="calendar-tip-erase">The eraser type will remove any calendar settings for a specific date. Select another type, like "holiday" for more info on what that type does.</p>
+                    <p class="calendar-tip" id="calendar-tip-holiday">Holidays are days where school is not in session. The day cycle skips that date.</p>
+                    <div class="calendar-tip" id="calendar-tip-set">
+                        <p>Set days are days when the day cycle must be set to a certain day. This might happen after an unplanned series of snow days or in the event of cycle makeup days.</p>
+                        <input type="text" id="calendar-setday-block" /><label for="calendar-setday-block">Type the block to set a day to.</label>
+                    </div>
+                    <div class="calendar-tip" id="calendar-tip-half">
+                        <p>Half days are days when school is in session but only for certain periods.</p>
+                        <input type="text" id="calendar-halfday-periods" /><label for="calendar-halfday-periods">Type a space separated list of periods that you have class.</label>
+                    </div>
+                    <p class="calendar-tip" id="calendar-tip-noclass">No class days are when school is in session but you don't have your classes. The day cycle keeps counting. This tends to happen during exam weeks or when one campus/building is in session.</p>
+                </div>
+                <h1 class="calendar-header">School Calendar</h1>
+                <div id="calendar-year">
+                </div>
             </div>
         </div>
     </body>

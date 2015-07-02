@@ -5,9 +5,9 @@ var parseDataText = function(txt) {
     
     lines.forEach( function(i) {
         if (i[0] !== "#" && i[0] !== ":" && i.trim() != "" && field) {
-            out[field].push(i);
+            out[field].push(i.trim());
         } else if (i[0] === ":") {
-            field = i.slice(1);
+            field = i.slice(1).trim();
             out[field] = [];
         }
     });
@@ -18,6 +18,7 @@ var parseDataText = function(txt) {
 var Calendar = function(start, end) {
     this.start = start;
     this.end = end;
+    this.SCHOOL_DAY = "school_day";
     this.SET_DAY = "set_day";
     this.HALF_DAY = "half_day";
     this.NO_CLASS = "no_session";
@@ -36,12 +37,27 @@ Calendar.prototype.fire = function(event, args) {
         this.callbacks[event][i].apply(event, args);
     }
 };
-Calendar.prototype.setDay = function(property, day) {
-    this._data[property].forEach( function(v, i) {
-        if (dayEquals(i, day)) {
-            this._data[property][i] = day;
+Calendar.prototype.eraseDay = function(day) {
+    // removes all information related to day
+    var types = Object.keys(this._data), i, j, v, search;
+
+    for (i=0; i < types.length; i+=1) {
+        // for each type of day in the calendar
+        for (j=0; j < this._data[types[i]].length; j+=1) {
+            // for each day v in that array
+            v = this._data[types[i]][j];
+            if (dayEquals(day, v)) {
+                // if day is in this array, then splice it out
+                this._data[types[i]].splice(j, 1);
+                j-=1;
+            }
         }
-    });
+    }
+};
+Calendar.prototype.setDay = function(property, day) {
+    this.eraseDay(day);
+    this._data[property].push(day);
+    this.fire("setDay", [property, day]);
 };
 Calendar.prototype.formatDate = function(d) {
     var months = ["January", "February", "March", "April", "May",
@@ -53,7 +69,6 @@ Calendar.prototype.toJSON = function() {
     var p, i, c = {},
         convert = function(i) {return {date: formatDate(i),
                                        block: i.block,
-                                       attendence: i.attendence,
                                        classes: i.classes,
                                        tags: i.tags};};
     
@@ -84,8 +99,9 @@ Calendar.prototype.fromJSON = function(j) {
 };
 Calendar.prototype.fromDataText = function(txt) {
     var o = parseDataText(txt);
-    this.start = o.START[0];
-    this.end = o.END[0];
+    window.demo = o;
+    this.start = day(o.START[0]);
+    this.end = day(o.END[0]);
     
     var mapper = function(i) {
         return day(i.trim());
@@ -95,12 +111,12 @@ Calendar.prototype.fromDataText = function(txt) {
     this._data[this.NO_CLASS] = o["NO CLASS"].map(mapper);
     
     this._data[this.SET_DAY] = o["SET DAY"].map(function(i) {
-        var d = i.trim.split("|");
+        var d = i.trim().split("|");
         return day(d[0].trim(), {block: d[1].trim()});
     });
     this._data[this.HALF_DAY] = o["HALF DAY"].map(function(i) {
-        var d = i.trim.split("|");
-        return day(d[0].trim(), {session: d[1].trim()});
+        var d = i.trim().split("|");
+        return day(d[0].trim(), {periods: d[1].trim().split(" ")});
     });
 };
 Calendar.prototype.isDay = function(day_type, day) {
@@ -114,47 +130,25 @@ Calendar.prototype.isDay = function(day_type, day) {
     
     return null;
 };
+Calendar.prototype.getDayType = function(day) {
+    if (this.isDay(this.NO_SCHOOL, day)) {
+        return this.NO_SCHOOL;
+    } else if (this.isDay(this.NO_CLASS, day)) {
+        return this.NO_CLASS;
+    } else if (this.isDay(this.SET_DAY, day)) {
+        return this.SET_DAY;
+    } else if (this.isDay(this.HALF_DAY, day)) {
+        return this.HALF_DAY;
+    } else {
+        return this.SCHOOL_DAY;
+    }
+};
 Calendar.prototype.isSchoolDay = function(d) {
     // DO NOT CHECK OFF DAYS - School is in session, but no classes are
     return d.getTime() >= this.start.getTime()
         && d.getTime() <= this.end.getTime()
         && d.getDay() !== 0 && d.getDay() !== 6
         && !this.isDay(this.NO_SCHOOL, d);
-};
-Calendar.prototype.forEachSchoolDay = function(start, end, func, start_block) {
-    var i = new Date(start),
-        block = dayEquals(i, this.start)? 0 : this.blocks.indexOf(start_block),
-        daysOff = 0,
-        result;
-        
-    if (block === null || block === undefined) {
-        // Is there a better way to throw exceptions, or are they this broken?
-        throw "Cannot select a start block";
-    }
-    
-    for (; i.getTime() < end.getTime() + 1; i.setDate(i.getDate() + 1)) {
-        
-        if (!this.isSchoolDay(i)) {
-            daysOff += 1;
-            continue;
-        } else if (this.isDay(this.NO_CLASS, i)) {
-            daysOff += 1;
-        }
-        
-        if (this.isDay(this.SET_DAY, i)) {
-            block = this.blocks.indexOf(isDay(this.SET_DAY, i).block);
-        }
-        
-        result = func(i, block, daysOff);
-        
-        // exit if func is false
-        if (result === false) {
-            break;
-        }
-        
-        daysOff = 0;
-        block = (block + 1) % (this.blocks.length + 1);
-    }
 };
 
 var Schedule = function(days, periods) {
@@ -185,6 +179,12 @@ Schedule.prototype.fromJSON = function(j) {
     this.days = j.days;
     this.periods = j.periods;
     this.array = j.array;
+};
+Schedule.prototype.fromDataText = function(txt) {
+    var o = parseDataText(txt);
+    this.days = o.DAYS;
+    this.periods = o.PERIODS;
+    this.array = [];
 };
 Schedule.prototype.on = function(event, func) {
     this.callbacks[event].push(func);
@@ -284,101 +284,70 @@ var day = function(dateStr, data) {
     
     if (data) {
         d.block = data.block;
-        // "AM" if students attended in the morning else "PM"
-        d.attendence = data.attendence;
-        // "AM" if morning classes were taken, else "PM"
-        d.classes = data.classes;
+        // the periods associated with this day
+        d.periods = data.periods;
         d.tags = data.tags;
     }
     
     return d;
 };
 
+/**
+ * @param includeWeekends true if x == 0 means Sunday
+ */
+day.fromGrid = function(year, month, x, y, excludeWeekends) {
+    // month, x, and y are zero based
+    var i, date = new Date(year, month, 1);
+    
+    i = x + y * 7;
+    
+    if (excludeWeekends) {
+        // move x ahead to include sunday
+        // (end of week is irrelevant because x should never be 6 on this grid)
+        i += 1;
+    }
+    
+    // what day is the first of the month?
+    // remove that from i
+    // (because Sunday is zero, we don't need extra offset)
+    i -= date.getDay();
+    // add one since setDate is one based
+    date.setDate(1 + i);
+    return date;
+};
+
+day.months = ["January", "February", "March", "April", "May", "June",
+              "July", "August", "September", "October", "November",
+              "December"];
+
 var dayEquals = function(a, b) {
     return a.getTime() === b.getTime();
 };
 
-// CONFIGURATION
-
-var params = {
-    period_length: 60,
-    periods: 7,
-    start: new Date("September 2 2014"),
-    end: new Date("June 24 2015"),
-    start_block: "A",
-    max_block: "F",
-    blocks: ["A", "B", "C", "D", "E", "F"],
-    reverser: null,
-    calendar: {
-        no_school: [],
-        no_session: [],
-        set_day: [],
-        half_day: []
-    },
-    // dictionary of actual school days
-    days: null, 
-    isDay: function(dayType, date) {
-        var i;
-        for(i=0; i < this.calendar[dayType].length; i+=1) {
-            if (dayEquals(this.calendar[dayType][i], date)) {
-                return this.calendar[dayType][i];
-            }
-        }
-        return null;
-    }
-};
-
-params.getReverser = function() {
-    var r = {};
-    params.blocks.forEach( function(v, i) {
-        r[v] = i;
-    });
-    return params.reverser = r;
-}
-    
-params.getReverser();
-
-// HELPER FUNCTIONS
-
-params.isSchoolDay = function(d) {
-    // DO NOT CHECK OFF DAYS - School is in session, but no classes are
-    return d.getTime() >= params.start.getTime()
-        && d.getTime() <= params.end.getTime()
-        && d.getDay() !== 0 && d.getDay() !== 6
-        && !params.isDay("no_school", d);
-};
-
-
-
-/*
-    calls func with (date, block) for each school day between start and end
-        where block is the block number
-    if func returns false, forEachSchoolDay will break
-*/
-params.forEachSchoolDay = function(start, end, func, start_block) {
-    
-    var i = new Date(start),
-        block = dayEquals(start, params.start)?
-                    params.reverser[params.start_block]
-                    : params.reverser[start_block],
+function forEachSchoolDay(cal, sched, func, start, end, start_block) {
+    var i = new Date(start? start : cal.start),
+        block = dayEquals(i, cal.start)? sched.days[0] 
+                                       : sched.days.indexOf(start_block),
         daysOff = 0,
         result;
         
     if (block === null || block === undefined) {
+        // Is there a better way to throw exceptions, or are they this broken?
         throw "Cannot select a start block";
     }
     
+    end = end? end : cal.end;
     for (; i.getTime() < end.getTime() + 1; i.setDate(i.getDate() + 1)) {
         
-        if (!params.isSchoolDay(i)) {
+        if (!cal.isSchoolDay(i)) {
             daysOff += 1;
             continue;
-        } else if (params.isDay("no_session", i)) {
+        } else if (cal.isDay(cal.NO_CLASS, i)) {
             daysOff += 1;
         }
         
-        if (params.isDay("set_day", i)) {
-            block = params.reverser[params.isDay("set_day", i).block];
+        if (cal.isDay(cal.SET_DAY, i)) {
+            block = cal.isDay(cal.SET_DAY, i).block;
         }
         
         result = func(i, block, daysOff);
@@ -389,38 +358,35 @@ params.forEachSchoolDay = function(start, end, func, start_block) {
         }
         
         daysOff = 0;
-        block = (block + 1) % (params.reverser[params.max_block] + 1);
+        var orig = block;
+        block = (sched.days.indexOf(block) + 1) % (sched.days.length);
+        
+        block = sched.days[ block ];
     }
 };
 
-params.getBlockDay = function(d) {
-    // REFACTOR: use subtraction rather than iteration?
-    var r = null;
+function getBlockDay(calendar, schedule, d, previous) {
+    // returns null if day is not in the school year (ie, holiday and summer)
+    // previous should be the block of the last school day
+    var r = null, func;
     
-    params.forEachSchoolDay(params.start, params.end,
-        function(i, block) {
-            if (dayEquals(i, d)) {
-                r = block;
-                return false;
-            }
+    func = function(i, block) {
+        if (dayEquals(i,d)) {
+            r = block;
+            return false;
         }
-    );
+    };
     
-    return r;
-};
-
-var getBlockDay = function(calendar, schedule, d) {
-    var r = null;
-
-    calendar.forEachSchoolDay(calendar.start, calendar.end,
-        function(i, block) {
-            if (dayEquals(i,d)) {
-                r = block;
-                return false;
-            }
-        }
-    );
-
+    // TODO: Add optimization here to speed up this function
+    if (previous) {
+        // use the previous day - it won't matter if its not a school day
+        console.log("WANRING: Using untested code path!");
+        forEachSchoolDay(calendar, schedule, func,
+          new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1), null, previous);
+    } else {
+        forEachSchoolDay(calendar, schedule, func);
+    }
+    
     return r;
 };
 

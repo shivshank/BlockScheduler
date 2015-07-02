@@ -1,0 +1,120 @@
+#class-list-div {
+    float: left;
+    width: 100px;
+    margin: 10px;
+    border: 1px solid black;
+}
+
+#class-list {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+#class-list-div button {
+    display: block;
+    margin: 0px;
+    width: 100%;
+    
+    border: none;
+    transition: background 0.5s;
+    -webkit-transition: background 0.5s;
+    
+    min-height: 25px;
+}
+#class-list-add-new {
+    background: #3366FF;
+}
+#class-list-add-new:hover {
+    background: #88AAFF;
+}
+#class-list-remove-selected {
+    background: #FF3300;
+}
+#class-list-remove-selected:hover {
+    background: #FF5533;
+}
+
+#class-list .selected {
+	background: #3366FF !important;
+}
+
+#class-list li {
+    list-style-type: none;
+    
+    display: block;
+    padding: 5px 0px;
+    margin: 5px 0px;
+    border: none;
+    
+    text-align: center;
+    
+    color: black;
+    
+    transition: background 0.5s;
+    -webkit-transition: background 0.5s;
+}
+
+#class-list li span {
+    width: 100%;
+    text-align: center;
+}
+
+#class-list li:hover {
+    background: #3366FF;
+}
+#class-list .selected {
+    background: #3366Ff;
+    font-weight: bold;
+}
+
+#class-list li input {
+    text-align: center;
+    border: none;
+    padding: 15px;
+    font-weight: bold;
+}
+
+#prep-styler-div {
+    margin: 10px;
+    padding: 5px;
+    
+    width: 800px;
+    text-align: center;
+    border: 1px solid;
+}
+
+#teacher-schedule-div {
+    float: left;
+    margin: 10px;
+}
+
+#teacher-schedule {
+    border-collapse: collapse;
+}
+
+#teacher-schedule td {
+    width: 100px;
+    height: 50px;
+    
+    text-align: center;
+    vertical-align: middle;
+    
+    border: 1px solid black;
+    
+    transition: box-shadow 0.5s;
+    -webkit-transition: box-shadow 0.5s;
+}
+
+#teacher-schedule tbody td:hover:not(:first-child) {
+    box-shadow: inset 0px 0px 10px #333333;
+    cursor: pointer;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+
+@media print, (max-device-width: 9in) {
+    #class-list-div {
+        display: none;
+    }
+}
