@@ -1,5 +1,61 @@
 "use strict"
 
+tabs.makeEditable = function(element, delegate, inputId, inputClass,
+                             onDone, eventType) {
+    // this function makes an element editable on click
+    // when editing is complete (click off or press enter), it calls
+    //   the onDone callback with (originalElement, new text)
+    // if delegate is not null, then the handler is attached to element
+    //   but only triggered for events on $(delegate) (delegate is a selector)
+    
+    var handler = function(e) {
+        var target = $(e.currentTarget),
+            inputBox, parent;
+        
+        //f = $("<form>");
+        
+        inputBox = $("<input>");
+        inputBox.attr("type", "text");
+        if (inputId) {
+            inputBox.attr("id", inputId);
+        }
+        if (inputClass) {
+            inputBox.attr("class", inputClass);
+        }
+        //inputBox.appendTo(f);
+        
+        //sub = $("<input type='submit'/>");
+        //sub.css("display", "block");
+        //sub.appendTo(f);
+        
+        parent = target.parent();
+        // jQuery replaceWith removes all events; we don't want that
+        parent[0].replaceChild(inputBox[0], target[0]);
+        
+        inputBox.val( target.text() );
+        inputBox[0].select();
+        
+        inputBox.on("blur change", function() {
+            if (!document.contains(inputBox[0])) {
+                // if the inputBox has already been removed, then do nothing
+                return;
+            }
+            
+            var text = inputBox.val();
+            // we do want inputBox to be cleaned up now to avoid memory leaks
+            // (this function creates a new input every time)
+            inputBox.replaceWith(target);
+            onDone(target, text);
+        });
+    };
+    
+    if (delegate) {
+        $(element).on(eventType || "click", delegate, handler);
+    } else {
+        $(element).on(eventType || "click", handler);
+    }
+};
+
 tabs.schedule = {
 	div: null
 };
