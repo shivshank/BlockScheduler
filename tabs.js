@@ -12,8 +12,13 @@ tabs.settings = {
     init: function(c, s, p) {
         var txt;
         
-        $("s-save-button").click( function() {
-            $("s-save-text").value(c.toDataText());
+        $("#s-save-button").click( function() {
+            var o = "# lines starting with hash symbols are comments,\n" +
+                    "# colons mark fields\n";
+            o += s.toDataText();
+            o += c.toDataText();
+            $("#s-save-text").val(o);
+            $("#s-save-text")[0].select();
         });
     }
 };

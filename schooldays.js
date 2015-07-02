@@ -14,7 +14,11 @@ var parseDataText = function(txt) {
     
     return out;
 };
-
+var toDataText = function(txt) {
+    txt = [].concat(txt);
+    return txt.join("\n") + "\n";
+};
+    
 var Calendar = function(start, end) {
     this.start = start;
     this.end = end;
@@ -60,10 +64,7 @@ Calendar.prototype.setDay = function(property, day) {
     this.fire("setDay", [property, day]);
 };
 Calendar.prototype.formatDate = function(d) {
-    var months = ["January", "February", "March", "April", "May",
-                  "June", "July", "August", "September", "October",
-                  "November", "December"];
-    return months[d.getMonth()] + " " + d.getDate() + " " + d.getFullYear();
+    return day.formatDate(d);
 };
 Calendar.prototype.toJSON = function() {
     var p, i, c = {},
@@ -118,6 +119,29 @@ Calendar.prototype.fromDataText = function(txt) {
         var d = i.trim().split("|");
         return day(d[0].trim(), {periods: d[1].trim().split(" ")});
     });
+};
+Calendar.prototype.toDataText = function() {
+    var o = "", add = toDataText;
+    
+    o += add(":START");
+    o += add(this.formatDate(this.start));
+    o += add(":END");
+    o += add(this.formatDate(this.end));
+    o += add(":NO SCHOOL");
+    o += add(this._data[this.NO_SCHOOL].map(this.formatDate));
+    o += add(":NO CLASS");
+    o += add(this._data[this.NO_CLASS].map(this.formatDate));
+    o += add(":SET DAY");
+    o += add(this._data[this.SET_DAY].map(function(d) {
+        return day.formatDate(d) + " | " + d.block;
+    }));
+    o += add(":HALF DAY");
+    o += add(this._data[this.HALF_DAY].map(function(d) {
+        return Calendar.prototype.formatDate.call(null, d) +
+               " | " + d.periods.join(" ");
+    }));
+    
+    return o;
 };
 Calendar.prototype.isDay = function(day_type, day) {
     var i;
@@ -185,6 +209,15 @@ Schedule.prototype.fromDataText = function(txt) {
     this.days = o.DAYS;
     this.periods = o.PERIODS;
     this.array = [];
+};
+Schedule.prototype.toDataText = function() {
+    var o = "", add = toDataText;
+    
+    o += add(":DAYS");
+    o += add(this.days);
+    o += add(":PERIODS");
+    o += add(this.periods);
+    return o;
 };
 Schedule.prototype.on = function(event, func) {
     this.callbacks[event].push(func);
@@ -319,6 +352,10 @@ day.fromGrid = function(year, month, x, y, excludeWeekends) {
 day.months = ["January", "February", "March", "April", "May", "June",
               "July", "August", "September", "October", "November",
               "December"];
+
+day.formatDate = function(d) {
+    return day.months[d.getMonth()] + " " + d.getDate() + " " + d.getFullYear();
+};
 
 var dayEquals = function(a, b) {
     return a.getTime() === b.getTime();
