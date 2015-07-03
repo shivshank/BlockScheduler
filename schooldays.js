@@ -190,6 +190,12 @@ var Schedule = function(days, periods) {
         setSection: []
     };
 };
+Schedule.prototype.renamePeriod = function(period, newName) {
+    this.periods[this.periods.indexOf(period)] = newName;
+};
+Schedule.prototype.renameDay = function(period, newName) {
+    this.days[this.days.indexOf(period)] = newName;
+};
 Schedule.prototype.toJSON = function(spaces) {
     var s = {};
     
