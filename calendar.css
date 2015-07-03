@@ -19,7 +19,6 @@
 }
 
 .calendar-month td {
-    border: 1px solid #000;
     width: 20%;
     height: 1.5em;
     vertical-align: middle;
