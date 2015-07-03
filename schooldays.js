@@ -256,29 +256,37 @@ Schedule.prototype.getPreps = function() {
     return Object.keys(this.preps);
 };
 Schedule.prototype.blockId = function(day, period) {
-    var i = this.periods.indexOf(period)
-    return this.days.indexOf(day) * i + i;
+    var i = this.periods.indexOf(period);
+    return this.days.indexOf(day) * this.periods.length + i;
 };
 Schedule.prototype.fromBlockId = function(i) {
-    var b = Math.floor(i / this.periods);
+    var b = Math.floor(i / this.periods.length);
     b = this.days[b];
-    return {period: this.periods[i % this.periods.length], block: b};
+    return {period: this.periods[i % this.periods.length], day: b};
 };
 Schedule.prototype.getBlock = function(day, period) {
     return this.array[this.blockId(day, period)];
 };
-Schedule.prototype.setBlock = function(day, period, section) {
+Schedule.prototype.removeBlock = function(day, period) {
     var i = this.blockId(day, period),
-        oldSection = this.array[i], occurences;
-    
-    // decrement the occurrences of section
-    if (oldSection) {
-        this.preps[oldSection] -= 1;
-        if (this.preps[oldSection] === 0) {
-            this.fire("removePrep", [day, period, oldSection]);
-            delete this.preps[oldSection];
+        section = this.getBlock(day, period);
+        
+    // decrement occurrences
+    if (section) {
+        this.preps[section] -= 1;
+        if (this.preps[section] === 0) {
+            this.fire("removePrep", [day, period, section]);
+            delete this.preps[section];
         }
     }
+    
+    delete this.array[i];
+};
+Schedule.prototype.setBlock = function(day, period, section) {
+    var i = this.blockId(day, period),
+        occurences;
+    
+    this.removeBlock(day, period);
     
     // increment the occurrences of new section
     occurences = this.preps[section];
@@ -290,6 +298,7 @@ Schedule.prototype.setBlock = function(day, period, section) {
         this.preps[section] += 1;
     }
     
+    console.log("Setting array", i, "to", section, "for", day, period);
     this.fire("setSection", [day, period, section]);
     this.array[i] = section;
 };
@@ -304,7 +313,7 @@ Schedule.prototype.getBlocks = function(section) {
         }
     }
     
-    return b;
+    return r;
 };
 Schedule.prototype.getDay = function(d) {
     var r = [];
