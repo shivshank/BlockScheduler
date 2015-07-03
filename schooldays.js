@@ -196,6 +196,25 @@ Schedule.prototype.renamePeriod = function(period, newName) {
 Schedule.prototype.renameDay = function(period, newName) {
     this.days[this.days.indexOf(period)] = newName;
 };
+// OPTIMIZATION: it would increase coupling, but one of the remove functions
+//   could avoid iterating and splice a whole row
+// REFACTOR: A higher order function could generate these two remove functions!
+Schedule.prototype.removePeriod = function(p) {
+    var i, day;
+    for (i=0; i < this.days.length; i+=1) {
+        day = this.days[i];
+        this.array.splice(this.blockId(day, p), 1);
+    }
+    this.periods.splice(this.periods.indexOf(p), 1);
+};
+Schedule.prototype.removeDay = function(d) {
+    var i, period;
+    for (i=0; i < this.periods.length; i+=1) {
+        period = this.periods[i];
+        this.array.splice(this.blockId(d, period), 1);
+    }
+    this.days.splice(this.days.indexOf(p), 1);
+};
 Schedule.prototype.toJSON = function(spaces) {
     var s = {};
     
