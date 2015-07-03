@@ -227,6 +227,9 @@ Schedule.prototype.fire = function(event, args) {
         i.apply(null, args);
     });
 };
+Schedule.prototype.getPreps = function() {
+    return Object.keys(this.preps);
+};
 Schedule.prototype.blockId = function(day, period) {
     var i = this.periods.indexOf(period)
     return this.days.indexOf(day) * i + i;
