@@ -244,17 +244,20 @@ Schedule.prototype.getBlock = function(day, period) {
 };
 Schedule.prototype.setBlock = function(day, period, section) {
     var i = this.blockId(day, period),
-        oldSection = this.array[i];
+        oldSection = this.array[i], occurences;
     
     // decrement the occurrences of section
-    this.preps[oldSection] -= 1;
-    if (this.preps[oldSection] === 0) {
-        this.fire("removePrep", [day, period, oldSection]);
-        delete this.preps[oldSection];
+    if (oldSection) {
+        this.preps[oldSection] -= 1;
+        if (this.preps[oldSection] === 0) {
+            this.fire("removePrep", [day, period, oldSection]);
+            delete this.preps[oldSection];
+        }
     }
     
     // increment the occurrences of new section
-    if (this.preps[section] === undefined || this.preps[section] === null) {
+    occurences = this.preps[section];
+    if (occurences === undefined || occurences === null || occurences === "") {
         // fire add prep handler
         this.fire("addPrep", [day, period, section]);
         this.preps[section] = 1;
