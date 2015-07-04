@@ -66,11 +66,194 @@ tabs.makeEditable = function(element, delegate, inputId, inputClass,
 };
 
 tabs.schedule = {
-	div: null
+	tableDiv: null,
+    classList: null,
+    styler: null,
+    radioName: null,
+    addButton: null,
+    load: function(c, s, p) {
+        var table, head, col, preps, i, prepLabel, prepRadio, span;
+        this.tableDiv.empty();
+        
+        table = tableGrid.create(s.days.length + 1);
+        // header is separate from body height
+        table.makeUniform(s.periods.length);
+        table.getTable().appendTo(this.tableDiv);
+        
+        // head is actually a reference to a tr
+        head = $("<tr>").appendTo(table.getHead());
+        for (col=0; col < s.days.length + 1; col+=1) {
+            // for each col + 1 because the first column is also a header
+            if (col > 0) {
+                // wrap the text in a span so makeEditable (see loadEvents)
+                //   renders the inputBox nicely
+                span = $("<span class='schedule-day'>").text(s.days[col - 1]);
+                head.append( $("<td>").append(span).attr(
+                                                 "data-day", s.days[col - 1]) );
+            } else {
+                head.append( $("<td>") );
+            }
+        }
+        
+        // fill in the table
+        table.forEachCell(function(cell, row, x, y) {
+            var period = s.periods[y], day;
+            
+            if (x > 0) {
+                day = s.days[x-1];
+                cell.attr("data-class", s.getBlock(day, period));
+                cell.text(s.getBlock(day, period));
+                cell.attr("data-period", period);
+                cell.attr("data-day", day);
+            } else {
+                cell.attr("data-period", period);
+                // wrap the text in a span so makeEditable (see loadEvents)
+                //   renders the inputBox nicely
+                cell.append($("<span class='schedule-period'>").text(period));
+            }
+        });
+
+        preps = s.getPreps();
+        this.classList.empty();
+        for (i=0; i < preps.length; i+=1) {
+            prepRadio = $("<input>").attr("type", "radio")
+                                    .attr("id", "schedule-class-" + i)
+                                    .attr("name", "schedule-class")
+                                    .attr("data-class", preps[i]);
+
+            prepLabel = $("<label>").attr("for", "schedule-class-" + i)
+                                    .text(preps[i]);
+
+            this.classList.append(prepRadio);
+            this.classList.append(prepLabel);
+        }
+        
+        this.loadEvents(table, s);
+    },
+    periodEditor: function(span, txt) {
+        var td = span.parent();
+        
+        txt = txt.trim();
+        if (txt === "") {
+            program.schedule.removePeriod(td.attr("data-period"));
+            // remove the tr parent of td
+            td.parent().remove();
+            return;
+        }
+        
+        // update the schedule (td still holds old period)
+        program.schedule.renamePeriod(td.attr("data-period"), txt);
+        
+        // update the view/ui (span holds text, td holds meta)
+        td.attr("data-period", txt);
+        span.text(txt);
+
+        // for each cell in the row
+        while ((td = td.next()) && td.length > 0) {
+            td.attr("data-period", txt);
+        }
+    },
+    dayEditor: function(span, txt) {
+        var td = span.parent(),
+                 table = td.parent().parent().parent(), // td < tr < thead < table
+                 col = table.find("td[data-day=" + td.attr("data-day") + "]");
+
+        txt = txt.trim();
+        if (txt === "") {
+            program.schedule.removeDay(td.attr("data-day"));
+            col.remove();
+            return;
+        }
+        
+        // update the schedule (td still holds old period)
+        program.schedule.renameDay(td.attr("data-day"), txt);
+        
+        // update the view/ui (span holds text, td holds meta)
+        td.attr("data-day", txt);
+        span.text(txt);
+        
+        col.attr("data-day", txt);
+    },
+    loadEvents: function(tableGrid, s) {
+        // attach editing handlers
+        // for period
+        tabs.makeEditable(tableGrid.getBody(), ".schedule-period", null,
+                        "schedule-table-input", this.periodEditor, "dblclick");
+        // for day
+        tabs.makeEditable(tableGrid.getHead(), ".schedule-day", null,
+                        "schedule-table-input", this.dayEditor, "dblclick");
+                        
+        // event handler for each cell in the table (excluding period headers)
+        tableGrid.getBody().on("click", "td:not(:first-child)", function(e) {
+            var section = tabs.schedule.getSelectedClass(),
+                target = $(e.currentTarget),
+                day = target.attr("data-day"),
+                period = target.attr("data-period");
+
+            if (section === "" || section === undefined || section === null) {
+                return;
+            }
+            
+            if (section === "Eraser") {
+                s.removeBlock(day, period);
+                target.text("");
+                target.attr("data-class", "");
+                return;
+            }
+            
+            s.setBlock(day, period, section);
+            target.text(section);
+            target.attr("data-class", section)
+        });
+        
+        // class list add event
+        // (any unused classes will disappear on reload, see this.load)
+        this.addButton.click( function() {
+            var field = $("<input>");
+            field.attr("type", "text");
+            field.addClass("schedule-class-input");
+            field.appendTo( tabs.schedule.classList );
+            field.select();
+            
+            field.on("blur change", function() {
+                var prep, label, radio;
+                
+                if (!$.contains(document, field[0])) {
+                    // field has already been removed, do nothing
+                    return;
+                }
+                
+                prep = field.val().trim();
+                field.remove();
+                
+                if (prep === "") {
+                    return;
+                }
+                
+                radio = $("<input>").attr("type", "radio")
+                                    .attr("name", "schedule-class")
+                                    .attr("id", "schedule-class-" + prep)
+                                    .attr("data-class", prep);
+
+                label = $("<label>").attr("for", "schedule-class-" + prep)
+                                    .text(prep);
+                
+                radio.appendTo(tabs.schedule.classList);
+                label.appendTo(tabs.schedule.classList);
+                radio.attr("checked", "checked");
+                radio.trigger("click");
+            });
+        });
+    },
+    getSelectedClass: function() {
+        return $("input[name=schedule-class]:checked").attr("data-class");
+    }
 };
 
 tabs.planner = {
     div: null,
+    load: function() {
+    }
 };
 
 tabs.settings = {

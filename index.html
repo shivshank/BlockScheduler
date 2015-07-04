@@ -47,24 +47,30 @@
             <div id="schedule" class="tab" data-name="Build it">
                 <div class="info">
                     <h1>Class Schedule</h1>
-                    <p>Fill out your class schedule. To begin, enter all your classes into the class list by hitting the big "+" sign.</p>
-                    <p>Once all your classes are entered, enter your schedule by clicking in each cell. When you click, it will cycle through each one of your classes.</p>
-                    <p>Finally, if your schedule looks correct, you should proceed to the Planner tab!</p>
-                    <p>You do not need to enter in every section if you do not want it displayed on the planner.</p>
-                    <p><em>(By default, there are seven periods so you can fit your lunch onto the schedule. If you don't put your lunch, just ignore the seventh period.)</em></p>
+                    <p>To begin, enter all your classes (preps) into the class list by hitting the "+" button on the left. You can remove a class by clicking the "x" button next to it.</p>
+                    <p>After adding a class, select it from the list. Then click in each appropriate cell on the schedule to place it. Use the Eraser to clear cells.</p>
+                    <p>Use the panel above to color code and stylize your schedule, if you like.</p>
+                    <p>Finally, if your schedule looks correct, you should proceed to the "See it" tab!</p>
+                    <p>Only periods with classes in them will appear on the planner under "See it" by default. For example, if the Lunch period has no classes in its row, then nothing will appear for that period in the generated planner.</p>
+                    <p>Double click on a period or day to rename it. Periods or days with empty names will be removed.</p>
                 </div>
-                <div id="schedule-table">
-                    <div id="prep-styler-div">
-                        <p>You may type a background color for your class.</p>
-                        <input id="prep-styler" type="text" value="white">
+                <div id="schedule-styler" class="cp">
+                    <div class="cp-radio-container">
+                        <input id="schedule-color-1" class="schedule-color" type="radio" name="schedule-color" checked="checked" />
+                            <label for="schedule-color-1">color</label>
+                        <input id="schedule-color-2" type="radio" name="schedule-color" />
+                            <label for="schedule-color-2">color</label>
                     </div>
-                    <div id="class-list-div">
-                        <button id="class-list-add-new">+</button>
-                        <ul id="class-list">
-                        </ul>
-                        <button id="class-list-remove-selected">Remove Selected</button>
-                    </div>
-                    <div id="teacher-schedule-div">
+                </div>
+                <div id="schedule-container">
+                    <div id="schedule-classes" class="cp-radio-container">
+                        <button id="schedule-class-add">+</button>
+                        <input id="schedule-class-eraser" type="radio" name="schedule-class" data-class="Eraser"/>
+                            <label for="schedule-class-eraser">Eraser</label>
+                        <div id="schedule-class-list">
+                        </div>
+                    </div><!-- hide space
+                    --><div id="schedule-table">
                     </div>
                 </div>
             </div>

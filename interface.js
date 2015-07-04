@@ -53,7 +53,11 @@ tabs.tabEvent = function(e) {
 };
     
 var init = function() {
-    tabs.schedule.div = $("#teacher-schedule-div");
+    tabs.schedule.tableDiv = $("#schedule-table");
+    tabs.schedule.classList = $("#schedule-class-list");
+    tabs.schedule.styler = $("#schedule-styler");
+    tabs.schedule.radioName = "schedule-class";
+    tabs.schedule.addButton = $("#schedule-class-add");
     
     tabs.planner.div = $("#planner");
     
