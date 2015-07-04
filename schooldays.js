@@ -213,7 +213,7 @@ Schedule.prototype.removeDay = function(d) {
         period = this.periods[i];
         this.array.splice(this.blockId(d, period), 1);
     }
-    this.days.splice(this.days.indexOf(p), 1);
+    this.days.splice(this.days.indexOf(d), 1);
 };
 Schedule.prototype.toJSON = function(spaces) {
     var s = {};
