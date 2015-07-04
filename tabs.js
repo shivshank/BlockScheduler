@@ -12,7 +12,6 @@ tabs.makeEditable = function(element, delegate, inputId, inputClass,
         var target = $(e.currentTarget),
             inputBox, parent;
         
-        //f = $("<form>");
         
         inputBox = $("<input>");
         inputBox.attr("type", "text");
@@ -22,11 +21,20 @@ tabs.makeEditable = function(element, delegate, inputId, inputClass,
         if (inputClass) {
             inputBox.attr("class", inputClass);
         }
+        
+        
+        /* This would create a form and wrap the inputBox...
+            this method would allow pressing enter, even on making no changes
+            to the inputBox. Its a consideration.
+        // TODO: do something that puts this into scm but out of working dir
+        //f = $("<form>");
+        
         //inputBox.appendTo(f);
         
         //sub = $("<input type='submit'/>");
-        //sub.css("display", "block");
+        //sub.css("display", "none");
         //sub.appendTo(f);
+        */
         
         parent = target.parent();
         // jQuery replaceWith removes all events; we don't want that
@@ -36,8 +44,9 @@ tabs.makeEditable = function(element, delegate, inputId, inputClass,
         inputBox[0].select();
         
         inputBox.on("blur change", function() {
-            if (!document.contains(inputBox[0])) {
+            if (!$.contains(document, inputBox[0])) {
                 // if the inputBox has already been removed, then do nothing
+                // (use jQuery.contains because of Node.contains support)
                 return;
             }
             
