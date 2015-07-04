@@ -315,6 +315,14 @@ Schedule.prototype.getBlocks = function(section) {
     
     return r;
 };
+Schedule.prototype.removeSection = function(section) {
+    var blocks = this.getBlocks(section),
+        i;
+    
+    for (i=0; i < blocks.length; i+=1) {
+        this.removeBlock(blocks[i].day, blocks[i].period);
+    }
+};
 Schedule.prototype.getDay = function(d) {
     var r = [];
     
