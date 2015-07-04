@@ -17,6 +17,12 @@ E
 F
 
 :PERIODS
+1
+2
+3
+4
+5
+Lunch
 6
 
 # calendar parameters
