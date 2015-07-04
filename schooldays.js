@@ -409,19 +409,18 @@ var dayEquals = function(a, b) {
     return a.getTime() === b.getTime();
 };
 
-function forEachSchoolDay(cal, sched, func, start, end, start_block) {
-    var i = new Date(start? start : cal.start),
-        block = dayEquals(i, cal.start)? sched.days[0] 
-                                       : sched.days.indexOf(start_block),
+function forEachSchoolDay(cal, sched, func) {
+    var i = new Date(cal.start),
+        block = sched.days[0],
+        end = cal.end,
         daysOff = 0,
         result;
-        
+    
     if (block === null || block === undefined) {
         // Is there a better way to throw exceptions, or are they this broken?
         throw "Cannot select a start block";
     }
-    
-    end = end? end : cal.end;
+
     for (; i.getTime() < end.getTime() + 1; i.setDate(i.getDate() + 1)) {
         
         if (!cal.isSchoolDay(i)) {
@@ -450,10 +449,10 @@ function forEachSchoolDay(cal, sched, func, start, end, start_block) {
     }
 };
 
-function getBlockDay(calendar, schedule, d, previous) {
+function getBlockDay(calendar, schedule, d) {
     // returns null if day is not in the school year (ie, holiday and summer)
-    // previous should be the block of the last school day
-    var r = null, func;
+
+    var r = null, func, previous;
     
     func = function(i, block) {
         if (dayEquals(i,d)) {
@@ -461,16 +460,8 @@ function getBlockDay(calendar, schedule, d, previous) {
             return false;
         }
     };
-    
-    // TODO: Add optimization here to speed up this function
-    if (previous) {
-        // use the previous day - it won't matter if its not a school day
-        console.log("WANRING: Using untested code path!");
-        forEachSchoolDay(calendar, schedule, func,
-          new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1), null, previous);
-    } else {
-        forEachSchoolDay(calendar, schedule, func);
-    }
+
+    forEachSchoolDay(calendar, schedule, func);    
     
     return r;
 };
