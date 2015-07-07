@@ -252,7 +252,107 @@ tabs.schedule = {
 
 tabs.planner = {
     div: null,
-    load: function() {
+    generateDay: function(element, date, c, s, p) {
+        var block = getBlockDay(c, s, date),
+            container,
+            item, day, i, half;
+        
+        element.append( $("<h1>").text("" + date.getDate() + " " + block) );
+        
+        if (c.isDay(c.NO_CLASS, date)) {
+            return;
+        }
+        
+        container = $("<div>");
+        container.appendTo(element);
+        
+        day = s.getDay(block);
+        
+        // TODO: Optimize Half day code...
+        if (half = c.isDay(c.HALF_DAY, date)) {
+            half = half.periods.map(function(i) {return s.periods.indexOf(i);});
+        } else {
+            half = [];
+        }
+        
+        for (i=0; i < day.length; i+=1) {
+            // this line is probably quite slow, invokes two more loops!
+            // could be cached
+            if (!p.planner.keepEmpty && s.isEmptyPeriod(s.periods[i])) {
+                continue;
+            }
+
+            item = $("<div>").addClass("planner-period");
+            item.appendTo(container);
+            if (half.length > 0 && half.indexOf(i)) {
+                // this period is not empty but it IS a half day
+                // continue before adding anything else
+                continue;
+            }
+            
+            if (p.planner.showPeriod) {
+                item.append( $("<span>").text(s.periods[i]).addClass("num") );
+            }
+            item.append( $("<span>").text(day[i]) );
+        }
+    },
+    generateMonth: function(div, date, omitWeekends, c, s, p) {
+        var table, weeks, head, dow;
+        
+        // append header
+        div.append($("<h1>").text(
+                       day.months[date.getMonth()] + " " + date.getFullYear()));
+
+        // create the table
+        if (omitWeekends) {
+            table = tableGrid.create(5);
+        } else {
+            table = tableGrid.create(7);
+        }
+        
+        date = new Date(date.getFullYear(), date.getMonth(), 1);
+        
+        // format the table with the correct number of weeks
+        weeks = new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
+        weeks = Math.ceil(weeks / 7);
+        table.makeUniform(weeks);
+        table.getTable().appendTo(div);
+        
+        // head is actually the tr
+        head = $("<tr>").appendTo(table.getHead());
+        // fill in the days of the week header
+        dow = "Monday Tuesday Wednesday Thursday Friday";
+        dow = omitWeekends? dow : "Sunday " + dow + " Saturday";
+        // turn this list into tds with each items text and append to head
+        dow.split(" ").forEach(function(i){ head.append($("<td>").text(i)); });
+
+        table.forEachCell( function(cell, row, x, y) {
+            var d = day.fromGrid(date.getFullYear(), date.getMonth(),
+                                                            x, y, omitWeekends);
+            if (d.getMonth() !== date.getMonth()) {
+                cell.addClass("placeholder");
+                return;
+            }
+            if (!c.isSchoolDay(d)) {
+                cell.addClass("no-school");
+                return;
+            }
+            
+            tabs.planner.generateDay(cell, d, c, s, p);
+        });
+    },
+    load: function(c, s, p) {
+        // TODO: Add support for different planners
+        // (lesson plans, yearly, weekly, per class)
+        var date = new Date(c.start),
+            div;
+        
+        this.div.empty();
+        while (date.getTime() < c.end.getTime()) {
+            div = $("<div>").addClass("planner-month").appendTo(this.div);
+            this.generateMonth(div, date, true, c, s, p);
+            date.setMonth(date.getMonth() + 1);
+        }
     }
 };
 

@@ -7,6 +7,11 @@ var program = {
     style: new Schedule([1, 2, 3, 4, 5, "Lunch", 6], "ABCDEF".split())
 };
 
+program.planner = {
+    keepEmpty: false,
+    showPeriod: true
+};
+
 var tabs = {
     activeTab: null
 };

@@ -1,27 +1,24 @@
-#planner {
-	width: 900px;
-}
-
-.planner h1 {
+#planner table h1 {
 	text-align: center;
+    font-weight: bold;
+    font-size: 1em;
+    border-bottom: 1px solid #333333;
+    margin: 0px;
+    padding: 5px;
 }
 
-.planner-table {
-	/*border-collapse: collapse;*/
-	width: 700px;
-	margin: 10px auto;
+#planner table {
+    width: 75%;
+    margin: 0px auto;
 }
 
-tr.planner-dow > td {
-	height: 30px;
-	text-align: center;
-    border: 1px solid black;
-    vertical-align: middle;
+#planner thead td {
+    border: 1px solid #333333;
+    text-align: center;
 }
 
-/* PLANNER CALENDAR DAY */
-td.planner-day {
-	border: 3px solid black;
+#planner tbody td {
+	border: 5px solid #333333;
     border-width: 3px 1px 3px 1px;
     
 	width: 100px;
@@ -30,37 +27,33 @@ td.planner-day {
 	vertical-align: top;
 }
 
-.planner .placeholder, .planner .no-school {
-	background: #666666;
+.planner-period {
+    position: relative;
+    width: auto;
+    padding: 5px;
+    margin: 0px;
+    border-bottom: 1px solid #333333;
+    height: 20px;
 }
 
-.planner-day-header {
-    padding: 2px;
-    height: 1.2em;
-    font-size: 1em;
-    font-weight: bold;
-    
-    vertical-align: middle;
-    text-align: center;
-}
-
-.planner-section {
-    font-size: 0.8em;
-    height: 0.9em;
-    
+.planner-period .num {
+    border-right: 1px solid #333333;
     margin: 0px;
     padding: 5px;
-    
-    border: 1px solid black;
-    border-width: 0px 0px 1px 0px;
+    text-align: left;
+}
+.planner-period span:not(.num) {
+    text-align: right;
+    width: 100%;
+    padding: 5px;
 }
 
-.planner-day-header + .planner-section {
-    border-width: 1px 0px 1px 0px;
+.planner-period:last-child {
+    border: none;
 }
 
-.planner-section:last-child {
-    border-width: 0px 0px 0px 0px;
+.planner-month .placeholder, .planner-month .no-school {
+	background: #666666;
 }
 
 @media print, (max-device-width: 9in) {
@@ -68,6 +61,10 @@ td.planner-day {
         width: 100%;
         padding: 0px;
         margin: 10px 0px 0px 0px;
+    }
+    
+    .planner table {
+        width: 100%;
     }
     
 	.planner-month {
@@ -79,11 +76,7 @@ td.planner-day {
 		page-break-inside: avoid;
 	}
     
-    .planner-month:last-child {
-        page-break-after: avoid;
-    }
-    
-    .planner-table {
+    .planner-month table {
         width: 8in;
         margin: 0px auto;
     }
