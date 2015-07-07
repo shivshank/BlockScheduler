@@ -22,7 +22,7 @@
         </style>
     </head>
     <body>
-        <iframe id="blockscheduler" src="http://shivshank.github.io/BlockScheduler/" frameborder="0" onload="uploadCalendar();">
+        <iframe id="blockscheduler" src="http://shivshank.github.io/BlockScheduler/" frameborder="0" onload="upload();">
         </iframe>
         
         <script>
@@ -30,7 +30,7 @@
             var upload = function() {
                 $.get("school.txt", function(data) {
                     // need to secure the targetOrigin argument...
-                    // (but its not like we're sending passwords, were sending
+                    // (but its not like we're sending passwords, we're sending
                     // public data...)
                     $("#blockscheduler")[0].contentWindow.window.postMessage(data, "*");
                 }, "text");
