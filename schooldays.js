@@ -28,6 +28,10 @@ var Calendar = function(start, end) {
     this.NO_CLASS = "no_session";
     this.NO_SCHOOL = "no_school";
     this._data = {};
+    this._data[this.SET_DAY] = [];
+    this._data[this.HALF_DAY] = [];
+    this._data[this.NO_CLASS] = [];
+    this._data[this.NO_SCHOOL] = [];
     this.callbacks = {
         setDay: []
     };
