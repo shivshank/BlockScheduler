@@ -338,10 +338,22 @@ Schedule.prototype.getPeriod = function(p) {
     
     var d = 0;
     for (d=0; d < this.days.length; d+=1) {
-        r.push( this.array[this.blockId(d, p)] );
+        r.push( this.array[this.blockId(this.days[d], p)] );
     }
     
     return r;
+};
+Schedule.prototype.isEmptyPeriod = function(p) {
+    var i;
+    
+    p = this.getPeriod(p);
+    for (i=0; i < p.length; i+=1) {
+        if (p[i]) {
+            return false;
+        }
+    }
+    
+    return true;
 };
 
 var Section = function(name, period, on_days, css) {
