@@ -70,11 +70,11 @@ Calendar.prototype.setDay = function(property, day) {
 Calendar.prototype.formatDate = function(d) {
     return day.formatDate(d);
 };
-Calendar.prototype.toJSON = function() {
-    var p, i, c = {},
-        convert = function(i) {return {date: formatDate(i),
+Calendar.prototype.toJSON = function(spaces) {
+    var p, i, j, c = {},
+        convert = function(i) {return {date: day.formatDate(i),
                                        block: i.block,
-                                       classes: i.classes,
+                                       periods: i.periods,
                                        tags: i.tags};};
     
     p = [this.SET_DAY, this.HALF_DAY, this.NO_CLASS, this.NO_SCHOOL];
@@ -83,12 +83,13 @@ Calendar.prototype.toJSON = function() {
     c.end = convert(this.end);
     
     for (i=0; i < p.length; i+=1) {
-        c[p[i]].forEach( function(j) {
-            c[p[i]] = convert(c[p[i]]);
-        });
+        c[p[i]] = [];
+        for (j=0; j < this._data[p[i]].length; j+=1) {
+            c[p[i]].push( convert(this._data[p[i]][j]) );
+        }
     }
     
-    return c;
+    return JSON.stringify(c, null, spaces || 0);
 };
 Calendar.prototype.fromJSON = function(j) {
     var t = JSON.parse(j),
@@ -234,16 +235,32 @@ Schedule.prototype.toJSON = function(spaces) {
     
     return JSON.stringify(s, null, spaces || 0);
 };
+Schedule.prototype._prepsField = function() {
+    var i, v;
+    this.preps = {};
+    for (i=0 ; i < this.array.length; i+=1) {
+        v = this.array[i];
+        if (this.preps[v] === undefined || this.preps[v] === null) {
+            this.preps[v] = 1;
+        } else {
+            this.preps[v] += 1;
+        }
+    }
+};
 Schedule.prototype.fromJSON = function(j) {
+    j = JSON.parse(j);
     this.days = j.days;
     this.periods = j.periods;
     this.array = j.array;
+    // must load preps so that they are not out of sync with array
+    this._prepsField();
 };
 Schedule.prototype.fromDataText = function(txt) {
     var o = parseDataText(txt);
     this.days = o.DAYS;
     this.periods = o.PERIODS;
     this.array = [];
+    // no preps to load
 };
 Schedule.prototype.toDataText = function() {
     var o = "", add = toDataText;
@@ -308,7 +325,6 @@ Schedule.prototype.setBlock = function(day, period, section) {
         this.preps[section] += 1;
     }
     
-    console.log("Setting array", i, "to", section, "for", day, period);
     this.fire("setSection", [day, period, section]);
     this.array[i] = section;
 };
