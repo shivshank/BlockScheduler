@@ -2,9 +2,15 @@ var program = {
     useAnim: true,
     saving: true,
     calendar: new Calendar(new Date("August 1 " + new Date().getFullYear()),
-                           new Date("June 1 " + new Date().getFullYear())),
-    schedule: new Schedule([1, 2, 3, 4, 5, "Lunch", 6], "ABCDEF".split()),
-    style: new Schedule([1, 2, 3, 4, 5, "Lunch", 6], "ABCDEF".split())
+                           new Date("June 1 " + (new Date().getFullYear()+1))),
+    schedule: new Schedule("ABCDEF".split(''), [1, 2, 3, 4, 5, "Lunch", 6]),
+    style: new Schedule("ABCDEF".split(''), [1, 2, 3, 4, 5, "Lunch", 6])
+};
+
+program.save = {
+    calendar: "ss-bs-calendar",
+    schedule: "ss-bs-schedule",
+    hash: "ss-bs-hash"
 };
 
 program.planner = {
@@ -76,23 +82,79 @@ var init = function() {
     tabs.switchTo("about");
 };
 
+var stringHashCode = function(s) {
+    // from http://stackoverflow.com/q/7616461
+    var hash = 0, i, chr, len;
+    
+    if (s.length == 0) return hash;
+    
+    for (i = 0, len = s.length; i < len; i++) {
+        chr   = s.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+};
+
 $(window).on('message', function(e) {
     // jQuery doesn't support post message so we need the originalEvent
     var data = e.originalEvent.data;
     console.log("info: received data from server");
-    program.calendar.fromDataText(data);
-    program.schedule.fromDataText(data);
+    
+    if (!localStorage.getItem(program.save.calendar)) {
+        program.calendar.fromDataText(data);
+    } else {
+        console.log('info: did not load calendar becasue it is saved locally');
+    }
+    
+    if (!localStorage.getItem(program.save.schedule)) {
+        program.schedule.fromDataText(data);
+    } else {
+        console.log('info: did not load schedule because it is saved locally');
+    }
+});
+
+$(window).on('unload', function(e) {
+    // does not work (reliably?) in all browsers
+    if (program.saving) {
+        localStorage.clear();
+        localStorage.setItem(program.save.calendar, program.calendar.toJSON());
+        localStorage.setItem(program.save.schedule, program.schedule.toJSON());
+    }
 });
 
 $(document).ready( function() {
     var n, attr, i;
     
-    // try to load a calendar from the server
-    // (in the event this is hosted somewhere)
+    // try to load a calendar from the server directly
     $.get( "school.txt", null, function(data) {
-        console.log('info: found school.txt on server, loading');
+        console.log('info: found school.txt on server');
         window.postMessage(data, '*');
     }, "text");
+    
+    // check if local storage exists
+    try {
+        localStorage.setItem('localStorage-test', 'localStorage-test');
+        localStorage.removeItem('localStorage-test');
+    } catch (e) {
+        alert("Your browser does not support saving. Update or try a different"+
+              "browser, such as Chrome or Firefox.");
+        program.saving = false;
+    }
+    
+    // load from local storage (saving should only be false now if no Storage)
+    if (program.saving) {
+        i = localStorage.getItem(program.save.calendar);
+        if (i) {
+            console.log("info: found locally stored calendar, loading");
+            program.calendar.fromJSON(i);
+        }
+        i = localStorage.getItem(program.save.schedule);
+        if (i) {
+            console.log("info: found locally stored schedule, loading");
+            program.schedule.fromJSON(i);
+        }
+    }
     
     // convert each main div into a selectable button
     $("#tabs").children().each( function() {
