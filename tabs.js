@@ -368,6 +368,41 @@ tabs.settings = {
             $("#s-save-text").val(o);
             $("#s-save-text")[0].select();
         });
+        
+        $("#s-saving").prop("checked", p.saving);
+        $("#s-saving").change( function(e) {
+            p.saving = e.target.checked;
+        });
+        
+        $("#s-erase-schedule").click( function(e) {
+            if (p.saving && localStorage && localStorage.removeItem) {
+                localStorage.removeItem(p.save.schedule);
+            }
+            p.undo.schedule = p.schedule;
+            p.schedule = new Schedule(["A"], ["1"]);
+        });
+        
+        $("#s-erase-calendar").click( function(e) {
+            if (p.saving && localStorage && localStorage.removeItem) {
+                localStorage.removeItem(p.save.calendar);
+            }
+            p.undo.calendar = p.calendar;
+            p.calendar = new Calendar(
+                            new Date("August 1 " + new Date().getFullYear()),
+                            new Date("June 1 " + (new Date().getFullYear()+1)));
+        });
+        
+        $("#s-load-calendar").click( function(e) {
+            if (p.undo.calendar) {
+                p.calendar = p.undo.calendar;
+            }
+        });
+        
+        $("#s-load-schedule").click( function(e) {
+            if (p.undo.schedule) {
+                p.schedule = p.undo.schedule;
+            }
+        });
     }
 };
 
@@ -389,6 +424,16 @@ tabs.calendar = {
         
         $("#calendar-halfday-periods").val("1 2 3");
         $("#calendar-setday-block").val("E");
+        
+        $("#calendar-refresh").click( function(e) {
+            program.saving = true;
+            if (localStorage && localStorage.removeItem) {
+                localStorage.removeItem(program.save.calendar);
+            }
+            program.saving = false;
+            window.location.hash = "#calendar";
+            window.location.reload();
+        });
     },
     load: function(c, s) {
         // remember that Date's month is zero based

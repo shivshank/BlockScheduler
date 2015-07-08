@@ -14,6 +14,10 @@
     vertical-align: top;
 }
 
+#settings-saving button {
+    display: block;
+}
+
 #settings {
     text-align: center;
 }

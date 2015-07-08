@@ -76,20 +76,16 @@
             </div>
             <div id="planner" class="tab" data-name="See it"></div>
             <div id="settings" class="tab" data-name="Customize it">
-                <div class="settings-group">
-                    <h1>Schedule Control</h1>
-                    <p>Use these to test various cycle configurations. Please note that if you enter data improperly, the program may not work correctly. Refresh the page to reset to defaults.</p>
-                    <p class="warning">Changing some of these will reset your schedule.</p>
-                    <label for="s-periods">Periods</label>
-                        <input id="s-periods" type="text" /><br/>
-                    <label for="s-p-length">Period Length</label>
-                        <input id="s-p-length" type="text" /><br/>
-                    <label for="s-blocks">Days in Cycle</label>
-                        <input id="s-blocks" type="text" /><br/>
-                    <label for="s-start-day">Start Date</label>
-                        <input id="s-start-day" type="text" /><br/>
-                    <label for="s-end-day">End Date</label>
-                        <input id="s-end-day" type="text" /><br/>
+                <h1>Settings</h1>
+                <div class="settings-group" id="settings-saving">
+                    <h2>Save Control</h2>
+                    <input type="checkbox" name="s-saving" id="s-saving"/>
+                        <label for="s-saving">Auto Save</label><br />
+                    <p>You can delete a schedule or calendar here. You can undo a delete with the restore buttons below until the page is reloaded.</p>
+                    <button id="s-erase-calendar">Delete Calendar</button>
+                    <button id="s-erase-schedule">Delete Schedule</button>
+                    <button id="s-load-calendar">Restore Calendar</button>
+                    <button id="s-load-schedule">Restore Schedule</button>
                 </div>
                 <div class="settings-group">
                     <textarea id="s-save-text"></textarea>
@@ -99,6 +95,7 @@
             </div>
             <div id="calendar" class="tab" data-name="Snow Days?">
                 <div class="info">
+                    <button id="calendar-refresh">Reload Calendar</button>
                     <p>This page is for adding snow days. It can also be used to edit and play with the calendar. Changes will be automatically saved. If you do not want this, disable saving under settings.</p>
                     <p>If the school calendar is not updated by an administrator, this page can also be used to build the entire calendar yourself.</p>
                     <p>To edit the calendar, simply select a day type below and click a date on the calendar to set it to that day type.</p>

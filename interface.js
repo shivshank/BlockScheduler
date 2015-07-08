@@ -7,6 +7,9 @@ var program = {
     style: new Schedule("ABCDEF".split(''), [1, 2, 3, 4, 5, "Lunch", 6])
 };
 
+program.undo = {
+};
+
 program.save = {
     calendar: "ss-bs-calendar",
     schedule: "ss-bs-schedule",

@@ -1,6 +1,24 @@
 #calendar-info {
 }
 
+#calendar-refresh {
+    display: block;
+    text-align: center;
+    width: 100px;
+    margin: 0px auto;
+    padding: 5px;
+    background: #333333;
+    border: 1px solid #000;
+    font-weight: bold;
+    color: #EEEEEE;
+    cursor: pointer;
+    transition: background 0.4s linear;
+    -webkit-transition: background 0.1s linear;
+}
+#calendar-refresh:hover {
+    background: #555;
+}
+
 .calendar-month {
     display: inline-block;
     margin: 5px;
