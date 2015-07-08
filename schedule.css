@@ -129,4 +129,21 @@
     #schedule-styler, #schedule-classes {
         display: none;
     }
+    
+    #schedule-table {
+        border: none;
+        width: 100%;
+        margin: 0px;
+        padding: 0px;
+    }
+    
+    #schedule-table > table {
+        border: none;
+        width: 90%;
+        margin: 10px auto;
+    }
+    
+    #schedule-table > table td {
+        border: 1px solid #000;
+    }
 }

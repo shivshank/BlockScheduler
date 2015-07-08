@@ -128,4 +128,12 @@
         display: inline-block;
         text-align: center;
     }
+    
+    .calendar-month td {
+        border: 1px solid #000;
+    }
+    
+    .calendar-month thead, .calendar-month table {
+        border: none
+    }
 }

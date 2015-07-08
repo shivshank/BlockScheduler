@@ -56,7 +56,7 @@
 	background: #666666;
 }
 
-@media print, (max-device-width: 9in) {
+@media print, (max-width: 9in) {
     .planner {
         width: 100%;
         padding: 0px;
@@ -76,8 +76,13 @@
 		page-break-inside: avoid;
 	}
     
-    .planner-month table {
+    #planner table {
         width: 8in;
         margin: 0px auto;
+        border: none;
+    }
+    
+    #planner td {
+        border-color: #000 !important;
     }
 }
