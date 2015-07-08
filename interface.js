@@ -52,7 +52,13 @@ tabs.switchTo = function(t) {
         $("#" + t).show();
     }
     program.activeTab = t;
+    
+    window.location.hash = t;
 };
+
+$(window).on("hashchange", function(e) {
+    tabs.switchTo(window.location.hash.slice(1));
+});
 
 tabs.tabEvent = function(e) {
     // if [this].[id] === [something]-button, switch to element [something]
@@ -81,8 +87,6 @@ var init = function() {
     tabs.calendar.div = $("#calendar-year");
     tabs.calendar.dayTypeSelector = $("#calendar-day-types");
     tabs.calendar.toolTipFormat = "calendar-tip";
-    
-    tabs.switchTo("about");
 };
 
 var stringHashCode = function(s) {
@@ -171,4 +175,10 @@ $(document).ready( function() {
     });
    
     init();
+    
+    if (window.location.hash) {
+        tabs.switchTo(window.location.hash.slice(1));
+    } else {
+        tabs.switchTo("about");
+    }
 });

@@ -431,7 +431,7 @@ tabs.calendar = {
                 localStorage.removeItem(program.save.calendar);
             }
             program.saving = false;
-            window.location.hash = "#calendar";
+            window.location.hash = "#about";
             window.location.reload();
         });
     },
