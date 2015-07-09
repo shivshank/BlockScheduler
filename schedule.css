@@ -32,30 +32,64 @@
     font-weight: bold;
 }
 
-#schedule-class-add {
+#schedule-classes-header {
     display: block;
+    position: relative;
     margin: 0px 0px 5px auto;
     width: 100px;
+    height: 50px;
     
-    padding: 15px;
+    padding: 0px;
     
     border-radius: 10px 0px 0px 10px;
     
     border: 3px solid #3366FF;
     border-right: none;
-    transition: background 0.5s;
-    -webkit-transition: background 0.5s;
-    
     color: #EEE;
     font-weight: bold;
     
     background: #3366FF;
+    
+    overflow: hidden;
+}
+#schedule-classes-header > h2 {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0px;
+    margin: 0px;
+    
+    font-size: 1em;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", Arial, sans-serif;
+}
+
+#schedule-class-add {
+    display: block-inline;
+    
+    width: 75px;
+    padding: 0px;
+    margin: 5px 0px;
+    height: 1.9em;
+    font-weight: bold;
+    color: #EEE;
+    
+    text-align: center;
+
+    border-radius: 10px 0px 0px 10px;
+    
+    border: 3px solid #3366FF;
+    border-right: none;
+    background: #3366FF;
+    
+    transition: background 0.5s linear;
+    -webkit-transition: background 0.5s linear;
     
     cursor: pointer;
 }
 #schedule-class-add:hover {
     background: #2255AA;
 }
+
 .schedule-class-remove {
 }
 .schedule-class-input {
