@@ -181,8 +181,8 @@ Calendar.prototype.isSchoolDay = function(d) {
 };
 
 var Schedule = function(days, periods) {
-    this.days = days.slice(), periods.slice();
-    this.periods = periods;
+    this.days = days.map( function(i) {return i.toString();} );
+    this.periods = periods.map( function(i) {return i.toString()} );
     this.array = [];
     // the set of all sections in the array (key) and its occurrences (value)
     this.preps = {};
@@ -196,10 +196,10 @@ var Schedule = function(days, periods) {
     };
 };
 Schedule.prototype.renamePeriod = function(period, newName) {
-    this.periods[this.periods.indexOf(period)] = newName;
+    this.periods[this.periods.indexOf(period)] = newName.toString();
 };
-Schedule.prototype.renameDay = function(period, newName) {
-    this.days[this.days.indexOf(period)] = newName;
+Schedule.prototype.renameDay = function(day, newName) {
+    this.days[this.days.indexOf(day)] = newName.toString();
 };
 Schedule.prototype.removePeriod = function(p) {
     var i, day, indices = [];
@@ -249,14 +249,15 @@ Schedule.prototype._prepsField = function() {
 };
 Schedule.prototype.fromJSON = function(j) {
     j = JSON.parse(j);
-    this.days = j.days;
-    this.periods = j.periods;
+    this.days = j.days.map( function(i) {return i.toString();} );
+    this.periods = j.periods.map( function(i) {return i.toString();} );
     this.array = j.array;
     // must load preps so that they are not out of sync with array
     this._prepsField();
 };
 Schedule.prototype.fromDataText = function(txt) {
     var o = parseDataText(txt);
+    // everything from data text should be a string
     this.days = o.DAYS;
     this.periods = o.PERIODS;
     this.array = [];
@@ -283,8 +284,8 @@ Schedule.prototype.getPreps = function() {
     return Object.keys(this.preps);
 };
 Schedule.prototype.blockId = function(day, period) {
-    var i = this.periods.indexOf(period);
-    return this.days.indexOf(day) * this.periods.length + i;
+    var i = this.periods.indexOf(period.toString());
+    return this.days.indexOf(day.toString()) * this.periods.length + i;
 };
 Schedule.prototype.fromBlockId = function(i) {
     var b = Math.floor(i / this.periods.length);
@@ -292,7 +293,7 @@ Schedule.prototype.fromBlockId = function(i) {
     return {period: this.periods[i % this.periods.length], day: b};
 };
 Schedule.prototype.getBlock = function(day, period) {
-    return this.array[this.blockId(day, period)];
+    return this.array[this.blockId(day.toString(), period.toString())];
 };
 Schedule.prototype.removeBlock = function(day, period) {
     var i = this.blockId(day, period),
