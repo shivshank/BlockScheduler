@@ -106,6 +106,9 @@ tabs.schedule = {
                 if (block) {
                     cell.attr("data-class", block.name);
                     cell.text(block.name);
+                    if (block.meta.style) {
+                        cell.css(block.meta.style);
+                    }
                 }
                 cell.attr("data-period", period);
                 cell.attr("data-day", day);
@@ -299,6 +302,9 @@ tabs.planner = {
             
             if (day[i]) {
                 item.append( $("<span>").text(day[i].name) );
+                if (day[i].meta.style) {
+                    item.css(day[i].meta.style);
+                }
             }
         }
     },
