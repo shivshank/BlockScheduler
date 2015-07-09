@@ -240,10 +240,14 @@ Schedule.prototype._prepsField = function() {
     this.preps = {};
     for (i=0 ; i < this.array.length; i+=1) {
         v = this.array[i];
-        if (this.preps[v] === undefined || this.preps[v] === null) {
-            this.preps[v] = 1;
+        if (v === undefined || v === null) {
+            continue;
+        }
+        
+        if (this.preps[v.name] === undefined || this.preps[v.name] === null) {
+            this.preps[v.name] = 1;
         } else {
-            this.preps[v] += 1;
+            this.preps[v.name] += 1;
         }
     }
 };
@@ -301,49 +305,53 @@ Schedule.prototype.removeBlock = function(day, period) {
         
     // decrement occurrences
     if (section) {
-        this.preps[section] -= 1;
-        if (this.preps[section] === 0) {
+        this.preps[section.name] -= 1;
+        if (this.preps[section.name] === 0) {
             this.fire("removePrep", [day, period, section]);
             delete this.preps[section];
         }
     }
     
-    delete this.array[i];
+    this.array[i] = null;
 };
-Schedule.prototype.setBlock = function(day, period, section) {
+Schedule.prototype.setBlock = function(day, period, section, meta) {
     var i = this.blockId(day, period),
-        occurences;
+        name = section.toString();
+
+    section = {
+        name: name,
+        meta: meta || {}
+    };
     
     this.removeBlock(day, period);
-    
     // increment the occurrences of new section
-    occurences = this.preps[section];
-    if (occurences === undefined || occurences === null || occurences === "") {
+    if (!this.preps.hasOwnProperty(name)) {
         // fire add prep handler
         this.fire("addPrep", [day, period, section]);
-        this.preps[section] = 1;
+        this.preps[name] = 1;
     } else {
-        this.preps[section] += 1;
+        this.preps[name] += 1;
     }
     
     this.fire("setSection", [day, period, section]);
     this.array[i] = section;
 };
-Schedule.prototype.getBlocks = function(section) {
+Schedule.prototype.getBlocks = function(sectionName) {
+    // returns an array of {day, period, section: {name, meta}} objects
     var r = [], i, b;
     
     for (i=0; i < this.array.length; i+=1) {
-        if (this.array[i] === section) {
+        if (this.array[i] && this.array[i].name === sectionName) {
             b = this.fromBlockId(i);
-            b.section = section;
+            b.section = this.array[i];
             r.push(b);
         }
     }
     
     return r;
 };
-Schedule.prototype.removeSection = function(section) {
-    var blocks = this.getBlocks(section),
+Schedule.prototype.removeSection = function(sectionName) {
+    var blocks = this.getBlocks(sectionName),
         i;
     
     for (i=0; i < blocks.length; i+=1) {
@@ -366,11 +374,10 @@ Schedule.prototype.getPeriod = function(p) {
     return r;
 };
 Schedule.prototype.isEmptyPeriod = function(p) {
-    var i;
-    
-    p = this.getPeriod(p);
-    for (i=0; i < p.length; i+=1) {
-        if (p[i]) {
+    var d;
+   
+    for (d=0; d < this.days.length; d+=1) {
+        if (this.getBlock(this.days[d], p.toString())) {
             return false;
         }
     }

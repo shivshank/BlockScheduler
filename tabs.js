@@ -97,12 +97,16 @@ tabs.schedule = {
         
         // fill in the table
         table.forEachCell(function(cell, row, x, y) {
-            var period = s.periods[y], day;
+            var period = s.periods[y], day,
+                block;
             
             if (x > 0) {
                 day = s.days[x-1];
-                cell.attr("data-class", s.getBlock(day, period));
-                cell.text(s.getBlock(day, period));
+                block = s.getBlock(day, period);
+                if (block) {
+                    cell.attr("data-class", block.name);
+                    cell.text(block.name);
+                }
                 cell.attr("data-period", period);
                 cell.attr("data-day", day);
             } else {
@@ -190,7 +194,7 @@ tabs.schedule = {
                 day = target.attr("data-day"),
                 period = target.attr("data-period");
 
-            if (section === "" || section === undefined || section === null) {
+            if (!section) {
                 return;
             }
             
@@ -276,15 +280,14 @@ tabs.planner = {
         }
         
         for (i=0; i < day.length; i+=1) {
-            // this line is probably quite slow, invokes two more loops!
-            // could be cached
+            // empty periods could be cached
             if (!p.planner.keepEmpty && s.isEmptyPeriod(s.periods[i])) {
                 continue;
             }
 
             item = $("<div>").addClass("planner-period");
             item.appendTo(container);
-            if (half.length > 0 && half.indexOf(i)) {
+            if (half.length > 0 && half.indexOf(i) === -1) {
                 // this period is not empty but it IS a half day
                 // continue before adding anything else
                 continue;
@@ -293,7 +296,10 @@ tabs.planner = {
             if (p.planner.showPeriod) {
                 item.append( $("<span>").text(s.periods[i]).addClass("num") );
             }
-            item.append( $("<span>").text(day[i]) );
+            
+            if (day[i]) {
+                item.append( $("<span>").text(day[i].name) );
+            }
         }
     },
     generateMonth: function(div, date, omitWeekends, c, s, p) {
