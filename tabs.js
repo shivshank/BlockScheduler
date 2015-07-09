@@ -71,6 +71,23 @@ tabs.schedule = {
     styler: null,
     radioName: null,
     addButton: null,
+    addButtons: function(tablegrid) {
+        var parent, td;
+        // assign td to the very first td in the head
+        td = tablegrid.getHead().find("td:first-child").eq(0);
+        // day buttons
+        td.append( $("<div>").attr("id", "schedule-remove-day")
+                             .addClass("remove")
+                             .text("-") );
+        td.append( $("<div>").attr("id", "schedule-add-day")
+                             .addClass("add") );
+        // period buttons
+        td.append( $("<div>").attr("id", "schedule-remove-period")
+                             .addClass("remove")
+                             .text("-") );
+        td.append( $("<div>").attr("id", "schedule-add-period")
+                             .addClass("add") );
+    },
     load: function(c, s, p) {
         var table, head, col, preps, i, prepLabel, prepRadio, span;
         this.tableDiv.empty();
@@ -120,6 +137,9 @@ tabs.schedule = {
             }
         });
 
+        // add the day/period add/remove buttons
+        this.addButtons(table);
+        
         preps = s.getPreps();
         this.classList.empty();
         for (i=0; i < preps.length; i+=1) {
