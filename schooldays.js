@@ -195,6 +195,12 @@ var Schedule = function(days, periods) {
         setSection: []
     };
 };
+Schedule.prototype.addPeriod = function(p) {
+    this.periods.push(p.toString());
+};
+Schedule.prototype.addDay = function(d) {
+    this.days.push(d.toString());
+};
 Schedule.prototype.renamePeriod = function(period, newName) {
     this.periods[this.periods.indexOf(period)] = newName.toString();
 };
@@ -308,7 +314,7 @@ Schedule.prototype.removeBlock = function(day, period) {
         this.preps[section.name] -= 1;
         if (this.preps[section.name] === 0) {
             this.fire("removePrep", [day, period, section]);
-            delete this.preps[section];
+            delete this.preps[section.name];
         }
     }
     
@@ -356,6 +362,15 @@ Schedule.prototype.removeSection = function(sectionName) {
     
     for (i=0; i < blocks.length; i+=1) {
         this.removeBlock(blocks[i].day, blocks[i].period);
+    }
+};
+Schedule.prototype.renameSection = function(sectionName, newName) {
+    var blocks = this.getBlocks(sectionName),
+        i;
+    
+    for (i=0; i < blocks.length; i+=1) {
+        this.setBlock(blocks[i].day, blocks[i].period,
+                      newName, blocks[i].section.meta);
     }
 };
 Schedule.prototype.getDay = function(d) {

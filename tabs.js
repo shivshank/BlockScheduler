@@ -141,14 +141,21 @@ tabs.schedule = {
         
         txt = txt.trim();
         if (txt === "") {
-            program.schedule.removePeriod(td.attr("data-period"));
-            // remove the tr parent of td
-            td.parent().remove();
+            if (!td.attr("data-period")) {
+                // the period wasn't created yet, remove the row
+                td.parent().remove();
+            }
+            // do nothing
             return;
         }
         
         // update the schedule (td still holds old period)
-        program.schedule.renamePeriod(td.attr("data-period"), txt);
+        if (program.schedule.periods.indexOf(td.attr("data-period")) !== -1) {
+            program.schedule.renamePeriod(td.attr("data-period"), txt);
+        } else {
+            // period doesn't exist yet
+            program.schedule.addPeriod(txt);
+        }
         
         // update the view/ui (span holds text, td holds meta)
         td.attr("data-period", txt);
@@ -166,19 +173,97 @@ tabs.schedule = {
 
         txt = txt.trim();
         if (txt === "") {
-            program.schedule.removeDay(td.attr("data-day"));
-            col.remove();
+            if (!td.attr("data-day")) {
+                // the day wasn't created yet, remove the column
+                col.remove();
+            }
+            // do nothing
             return;
         }
         
         // update the schedule (td still holds old period)
-        program.schedule.renameDay(td.attr("data-day"), txt);
+        if (program.schedule.days.indexOf(td.attr("data-day")) !== -1) {
+            program.schedule.renameDay(td.attr("data-day"), txt);
+        } else {
+            program.schedule.addDay(txt);
+        }
         
         // update the view/ui (span holds text, td holds meta)
         td.attr("data-day", txt);
         span.text(txt);
         
         col.attr("data-day", txt);
+    },
+    classEditor: function(label, txt) {
+        var radio = label.prev(),
+            old = radio.attr("data-class"),
+            section = txt.trim(),
+            relevant = tabs.schedule.tableDiv.find(
+                                              "td[data-class='" + old + "']");
+        if (section === "") {
+            radio.remove();
+            label.remove();
+            if (old) {
+                relevant.text("").removeAttr("data-class");
+                program.schedule.removeSection(old);
+            }
+            return;
+        }
+        
+        radio.attr("id", tabs.schedule.radioName + "-" + section);
+        radio.attr("data-class", section);
+        label.attr("for", tabs.schedule.radioName + "-" + section);
+        radio.prop("checked", "checked");
+        
+        relevant.text(section).attr("data-class", section);
+        label.text(section);
+        program.schedule.renameSection(old, section);
+    },
+    scheduleEditor: function(e) {
+        var tr, col, i, span, s = program.schedule;
+        
+        switch (e.target.id) {
+        case "schedule-add-day":
+            // add the column
+            col = tabs.schedule.tableDiv.find("tbody tr");
+            for (i=0; i < col.length; i+= 1) {
+                col.eq(i).append( $("<td>").attr("data-period", s.periods[i]) );
+            }
+            // create the header and invoke the edit callback
+            tabs.schedule.tableDiv.find("thead tr:last-child").append("<td>");
+            span = $("<span>").addClass("schedule-day");
+            span.appendTo(tabs.schedule.tableDiv.find("thead td:last-child"));
+            span.trigger("dblclick");
+            break;
+        case "schedule-remove-day":
+            if (s.days.length > 1) {
+                tabs.schedule.tableDiv.find("td:last-child").remove();
+                s.removeDay(s.days[s.days.length - 1]);
+            }
+            break;
+        case "schedule-add-period":
+            // add the row
+            tr = $("<tr>");
+            tabs.schedule.tableDiv.find("tbody").eq(0).append(tr);
+            for (i=0; i < s.days.length + 1; i+=1) {
+                // should fail gracefully for s.days[-1] -> null
+                tr.append($("<td>").attr("data-day", s.days[i-1]));
+            }
+            // create the row header and invoke the edit callback
+            span = $("<span>").addClass("schedule-period");
+            span.appendTo(tr.children().eq(0));
+            span.trigger("dblclick");
+            break;                
+        case "schedule-remove-period":
+            if (s.periods.length > 1) {
+                tabs.schedule.tableDiv.find("tbody tr:last-child").remove();
+                s.removePeriod(s.periods[s.periods.length - 1]);
+            }
+            break;
+        default:
+            // do nothing
+            break;
+        }
     },
     loadEvents: function(tableGrid, s) {
         // attach editing handlers
@@ -212,40 +297,24 @@ tabs.schedule = {
             target.attr("data-class", section)
         });
         
+        // event handler for renaming and deleting classes
+        this.classList.on("dblclick", "label", tabs.editHandler(
+                          {"class": "schedule-class-input"}, this.classEditor));
+        
         // class list add event
         // (any unused classes will disappear on reload, see this.load)
         this.addButton.click( function() {
-            var radio = $("<input>");
+            var radio = $("<input>"), label = $("<label>");
             radio.attr("type", "radio");
+            radio.attr("name", tabs.schedule.radioName);
             radio.appendTo(tabs.schedule.classList);
-            
-            radio.click(tabs.editHandler( {"class": "schedule-class-input"},
-                function(e, txt) {
-                    var label;
-                    txt = txt.trim();
-                    e = $(e);
-                    
-                    if (txt === "") {
-                        // remove the added radio button
-                        e.remove();
-                        return;
-                    }
-                    
-                    e.attr("name", "schedule-class")
-                     .attr("id", "schedule-class-" + txt)
-                     .attr("data-class", txt);
-
-                    label = $("<label>").attr("for", "schedule-class-" + txt)
-                                        .text(txt);
-                    
-                    label.appendTo(tabs.schedule.classList);
-                    e.prop("checked", "checked");
-                }
-            ));
-            // trigger the handler and then remove it
-            radio.trigger("click");
-            radio.off("click");
-        });
+            label.appendTo(tabs.schedule.classList);
+            // invoke the section editor
+            label.trigger("dblclick");
+        }); 
+        
+        // add period/day buttons
+        tableGrid.getHeadCell(0, 0).on("click", this.scheduleEditor);
     },
     getSelectedClass: function() {
         return $("input[name=schedule-class]:checked").attr("data-class");
