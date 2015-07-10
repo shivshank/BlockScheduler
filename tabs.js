@@ -1,68 +1,47 @@
 "use strict"
 
-tabs.makeEditable = function(element, delegate, inputId, inputClass,
-                             onDone, eventType) {
-    // this function makes an element editable on click
-    // when editing is complete (click off or press enter), it calls
-    //   the onDone callback with (originalElement, new text)
-    // if delegate is not null, then the handler is attached to element
-    //   but only triggered for events on $(delegate) (delegate is a selector)
+tabs.createForm = function(inputAttr) {
+    var i;
     
+    i = $("<input>");
+    i.attr("type", "text");
+    i.attr(inputAttr || {});
+
+    return i;
+};
+
+tabs.editHandler = function(inputAttr, onDone) {
+    // this function creates an input handler that replaces the target element
+    // with an input element (actually a hidden form with visible input[text]).
+    // When the input is unfocused or edited (on blur and change), the onDone
+    // callback is invoked with ($(target), inputVal)
     var handler = function(e) {
-        var target = $(e.currentTarget),
-            inputBox, parent;
+        var target = $(e.currentTarget), input, parent;
         
-        
-        inputBox = $("<input>");
-        inputBox.attr("type", "text");
-        if (inputId) {
-            inputBox.attr("id", inputId);
-        }
-        if (inputClass) {
-            inputBox.attr("class", inputClass);
-        }
-        
-        
-        /* This would create a form and wrap the inputBox...
-            this method would allow pressing enter, even on making no changes
-            to the inputBox. Its a consideration.
-        // TODO: do something that puts this into scm but out of working dir
-        //f = $("<form>");
-        
-        //inputBox.appendTo(f);
-        
-        //sub = $("<input type='submit'/>");
-        //sub.css("display", "none");
-        //sub.appendTo(f);
-        */
+        input = tabs.createForm(inputAttr);
         
         parent = target.parent();
         // jQuery replaceWith removes all events; we don't want that
-        parent[0].replaceChild(inputBox[0], target[0]);
+        parent[0].replaceChild(input[0], target[0]);
         
-        inputBox.val( target.text() );
-        inputBox[0].select();
+        input.val( target.text() );
+        input.select();
         
-        inputBox.on("blur change", function() {
-            if (!$.contains(document, inputBox[0])) {
-                // if the inputBox has already been removed, then do nothing
+        input.on("blur change", function() {
+            if (!$.contains(document, input[0])) {
+                // if the input form has already been removed, then do nothing
                 // (use jQuery.contains because of Node.contains support)
                 return;
             }
             
-            var text = inputBox.val();
-            // we do want inputBox to be cleaned up now to avoid memory leaks
-            // (this function creates a new input every time)
-            inputBox.replaceWith(target);
+            var text = input.val();
+            // use jQuery replaceWith so the form is properly cleaned up
+            input.replaceWith(target);
             onDone(target, text);
         });
     };
     
-    if (delegate) {
-        $(element).on(eventType || "click", delegate, handler);
-    } else {
-        $(element).on(eventType || "click", handler);
-    }
+    return handler;
 };
 
 tabs.schedule = {
@@ -102,7 +81,7 @@ tabs.schedule = {
         for (col=0; col < s.days.length + 1; col+=1) {
             // for each col + 1 because the first column is also a header
             if (col > 0) {
-                // wrap the text in a span so makeEditable (see loadEvents)
+                // wrap the text in a span for editHandler (see loadEvents)
                 //   renders the inputBox nicely
                 span = $("<span class='schedule-day'>").text(s.days[col - 1]);
                 head.append( $("<td>").append(span).attr(
@@ -131,7 +110,7 @@ tabs.schedule = {
                 cell.attr("data-day", day);
             } else {
                 cell.attr("data-period", period);
-                // wrap the text in a span so makeEditable (see loadEvents)
+                // wrap the text in a span for editHandler (see loadEvents)
                 //   renders the inputBox nicely
                 cell.append($("<span class='schedule-period'>").text(period));
             }
@@ -204,12 +183,12 @@ tabs.schedule = {
     loadEvents: function(tableGrid, s) {
         // attach editing handlers
         // for period
-        tabs.makeEditable(tableGrid.getBody(), ".schedule-period", null,
-                        "schedule-table-input", this.periodEditor, "dblclick");
+        tableGrid.getBody().on("dblclick", ".schedule-period", tabs.editHandler(
+                         {"class": "schedule-table-input"}, this.periodEditor));
         // for day
-        tabs.makeEditable(tableGrid.getHead(), ".schedule-day", null,
-                        "schedule-table-input", this.dayEditor, "dblclick");
-                        
+        tableGrid.getHead().on("dblclick", ".schedule-day", tabs.editHandler(
+                            {"class": "schedule-table-input"}, this.dayEditor));
+
         // event handler for each cell in the table (excluding period headers)
         tableGrid.getBody().on("click", "td:not(:first-child)", function(e) {
             var section = tabs.schedule.getSelectedClass(),
@@ -236,40 +215,36 @@ tabs.schedule = {
         // class list add event
         // (any unused classes will disappear on reload, see this.load)
         this.addButton.click( function() {
-            var field = $("<input>");
-            field.attr("type", "text");
-            field.addClass("schedule-class-input");
-            field.appendTo( tabs.schedule.classList );
-            field.select();
+            var radio = $("<input>");
+            radio.attr("type", "radio");
+            radio.appendTo(tabs.schedule.classList);
             
-            field.on("blur change", function() {
-                var prep, label, radio;
-                
-                if (!$.contains(document, field[0])) {
-                    // field has already been removed, do nothing
-                    return;
-                }
-                
-                prep = field.val().trim();
-                field.remove();
-                
-                if (prep === "") {
-                    return;
-                }
-                
-                radio = $("<input>").attr("type", "radio")
-                                    .attr("name", "schedule-class")
-                                    .attr("id", "schedule-class-" + prep)
-                                    .attr("data-class", prep);
+            radio.click(tabs.editHandler( {"class": "schedule-class-input"},
+                function(e, txt) {
+                    var label;
+                    txt = txt.trim();
+                    e = $(e);
+                    
+                    if (txt === "") {
+                        // remove the added radio button
+                        e.remove();
+                        return;
+                    }
+                    
+                    e.attr("name", "schedule-class")
+                     .attr("id", "schedule-class-" + txt)
+                     .attr("data-class", txt);
 
-                label = $("<label>").attr("for", "schedule-class-" + prep)
-                                    .text(prep);
-                
-                radio.appendTo(tabs.schedule.classList);
-                label.appendTo(tabs.schedule.classList);
-                radio.attr("checked", "checked");
-                radio.trigger("click");
-            });
+                    label = $("<label>").attr("for", "schedule-class-" + txt)
+                                        .text(txt);
+                    
+                    label.appendTo(tabs.schedule.classList);
+                    e.prop("checked", "checked");
+                }
+            ));
+            // trigger the handler and then remove it
+            radio.trigger("click");
+            radio.off("click");
         });
     },
     getSelectedClass: function() {
