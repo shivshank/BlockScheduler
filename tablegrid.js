@@ -42,6 +42,12 @@ var tableGrid = {
     getBody: function() {
         return this.body;
     },
+    getHeadCell: function(x, y) {
+        return this.head.children().eq(y).children().eq(x);
+    },
+    getCell: function(x, y) {
+        return this.body.children().eq(y).children().eq(x);
+    },
     setClasses: function(tableRows, tableDatas) {
         this.table.children().addClass(tableRows).forEach( function(i, v) {
             // for each table row
