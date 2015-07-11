@@ -123,11 +123,11 @@ tabs.schedule = {
         this.classList.empty();
         for (i=0; i < preps.length; i+=1) {
             prepRadio = $("<input>").attr("type", "radio")
-                                    .attr("id", "schedule-class-" + i)
+                                    .attr("id", "schedule-class-" + preps[i])
                                     .attr("name", "schedule-class")
                                     .attr("data-class", preps[i]);
 
-            prepLabel = $("<label>").attr("for", "schedule-class-" + i)
+            prepLabel = $("<label>").attr("for", "schedule-class-" + preps[i])
                                     .text(preps[i]);
 
             this.classList.append(prepRadio);
@@ -140,7 +140,8 @@ tabs.schedule = {
         var td = span.parent();
         
         txt = txt.trim();
-        if (txt === "") {
+        if (txt === "" || program.schedule.periods.indexOf(txt) !== -1) {
+            // if the user entered nothing or this period already exists
             if (!td.attr("data-period")) {
                 // the period wasn't created yet, remove the row
                 td.parent().remove();
@@ -168,11 +169,13 @@ tabs.schedule = {
     },
     dayEditor: function(span, txt) {
         var td = span.parent(),
-                 table = td.parent().parent().parent(), // td < tr < thead < table
-                 col = table.find("td[data-day=" + td.attr("data-day") + "]");
+            table = td.parent().parent().parent(), // td < tr < thead < table
+            col = table.find("td:nth-child(" + (td.index() + 1) + ")");
 
+        console.log(col);
         txt = txt.trim();
-        if (txt === "") {
+        if (txt === "" || program.schedule.days.indexOf(txt) !== -1) {
+            // if the user entered nothing or this day already exists
             if (!td.attr("data-day")) {
                 // the day wasn't created yet, remove the column
                 col.remove();
@@ -198,9 +201,13 @@ tabs.schedule = {
         var radio = label.prev(),
             old = radio.attr("data-class"),
             section = txt.trim(),
+            newId = tabs.schedule.radioName + "-" + section,
             relevant = tabs.schedule.tableDiv.find(
                                               "td[data-class='" + old + "']");
-        if (section === "") {
+
+        if (section === "" || $("#" + newId).length) {
+            // if user entered nothing or a class with this ID exists already
+            $("#" + newId).prop("checked", "checked"); // select that radio!
             radio.remove();
             label.remove();
             if (old) {
@@ -210,9 +217,9 @@ tabs.schedule = {
             return;
         }
         
-        radio.attr("id", tabs.schedule.radioName + "-" + section);
+        radio.attr("id", newId);
         radio.attr("data-class", section);
-        label.attr("for", tabs.schedule.radioName + "-" + section);
+        label.attr("for", newId);
         radio.prop("checked", "checked");
         
         relevant.text(section).attr("data-class", section);
