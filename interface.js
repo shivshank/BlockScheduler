@@ -173,9 +173,9 @@ $(document).ready( function() {
         n.click(tabs.tabEvent);
         $("#tab-container").append(n);
     });
-   
+
     init();
-    
+
     if (window.location.hash) {
         tabs.switchTo(window.location.hash.slice(1));
     } else {
