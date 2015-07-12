@@ -196,7 +196,14 @@ var Schedule = function(days, periods) {
     };
 };
 Schedule.prototype.addPeriod = function(p) {
+    var i;
     this.periods.push(p.toString());
+    
+    // adjust all the indices of other classes (in reverse order)
+    for (i = (this.periods.length - 1) * (this.days.length - 1);
+         i >= this.periods.length - 1; i -= this.periods.length - 1) {
+        this.array.splice(i, 0, null);
+    }
 };
 Schedule.prototype.addDay = function(d) {
     this.days.push(d.toString());
