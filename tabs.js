@@ -304,6 +304,8 @@ tabs.schedule = {
             target.attr("data-class", section)
         });
         
+        // prevent multiple calls to loadEvents from adding duplicate handlers
+        this.classList.off("dblclick");
         // event handler for renaming and deleting classes
         this.classList.on("dblclick", "label", tabs.editHandler(
                           {"class": "schedule-class-input"}, this.classEditor));
