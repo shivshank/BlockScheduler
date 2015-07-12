@@ -3,13 +3,13 @@
     <head>
         <meta charset="utf-8">
         <title>The Block Scheduler</title>
-        
+
         <link rel="stylesheet" type="text/css" href="main.css">
         <link rel="stylesheet" type="text/css" href="schedule.css">
         <link rel="stylesheet" type="text/css" href="planner.css">
         <link rel="stylesheet" type="text/css" href="settings.css">
         <link rel="stylesheet" type="text/css" href="calendar.css">
-        
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
         <script src="schooldays.js"></script>
         <script src="tablegrid.js"></script>
@@ -23,7 +23,7 @@
             <div id="tab-container">
             </div>
         </div>
-        
+
         <div id="tabs">
             <div id="about" class="tab" data-name="About it">
                 <div class="info">
@@ -40,19 +40,19 @@
                     <p><strong>Be sure to use print preview</strong>. If your browser has a shrink to fit option, enable it, and make sure to also <strong>enable print backgrounds</strong> if you want to see any shading or colors. </p>
                     <p>Some browsers let you disable the headers and footers, such as the time of printing. It is also recommended that you reduce the margins as much as possible.</p>
                     <p>If shrink to fit fails to fit each month onto its own page, try adjusting the scale until it does fit. 90% seems to work well.</p>
-                    <p>Each tab is printable, so be sure to select the "See it" tab if you want to print your yearly planner. This program could also be used to print your block schedule or a one page calendar.</p>
+                    <p>Each tab is printable, so be sure to select the "See it" tab if you want to print your yearly planner. This program could also be used to print your schedule ("Build it") or a one page calendar ("Snow days").</p>
                     <p>For best results, use Firefox or Chrome on PC/Windows and Safari on Mac.</p>
                 </div>
             </div>
             <div id="schedule" class="tab" data-name="Build it">
                 <h1>Class Schedule</h1>
                 <div class="info">
-                    <p>To begin, enter all your classes (preps) into the class list by hitting the "+" button on the left. You can remove a class by clicking the "x" button next to it.</p>
+                    <p>To begin, enter all your classes (preps) into the class list by hitting the "+" button on the left. You can rename a class by doubleclicking it on the left.</p>
                     <p>After adding a class, select it from the list. Then click in each appropriate cell on the schedule to place it. Use the Eraser to clear cells.</p>
                     <p>Use the panel above to color code and stylize your schedule, if you like.</p>
                     <p>Finally, if your schedule looks correct, you should proceed to the "See it" tab!</p>
                     <p>Only periods with classes in them will appear on the planner under "See it" by default. For example, if the Lunch period has no classes in its row, then nothing will appear for that period in the generated planner.</p>
-                    <p>Double click on a period or day to rename it. Periods or days with empty names will be removed.</p>
+                    <p>Double click on a period or day to rename it. Use the tiny buttons on the far right and bottom of the table to add and remove days/periods. </p>
                 </div>
                 <div id="schedule-styler" class="cp">
                     <div class="cp-radio-container">
@@ -112,7 +112,7 @@
                         <label for="calendar-end-date">End Date</label><input type="text" id="calendar-end-date" />
                         <input type="submit" id="calendar-update" value="Refresh" />
                     </form>
-                    
+
                     <p>Select a day type below.</p>
                     <div id="calendar-day-types" class="cp-radio-container">
                         <input id="calendar-type-erase" type="radio" name="calendar-day-type" checked="checked" />
