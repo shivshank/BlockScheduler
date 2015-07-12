@@ -172,7 +172,6 @@ tabs.schedule = {
             table = td.parent().parent().parent(), // td < tr < thead < table
             col = table.find("td:nth-child(" + (td.index() + 1) + ")");
 
-        console.log(col);
         txt = txt.trim();
         if (txt === "" || program.schedule.days.indexOf(txt) !== -1) {
             // if the user entered nothing or this day already exists
@@ -643,7 +642,6 @@ tabs.calendar = {
                 break;
             case "half":
                 meta = $("#calendar-halfday-periods").val().trim().split(" ");
-                console.log(meta);
                 calendar.setDay(calendar.HALF_DAY, day(date, {periods: meta}));
                 break;
             case "noclass":
