@@ -13,7 +13,10 @@ program.undo = {
 program.save = {
     calendar: "ss-bs-calendar",
     schedule: "ss-bs-schedule",
-    hash: "ss-bs-hash"
+    hash: "ss-bs-hash",
+    settings: {
+        planner: "ss-bs-settings-planner"
+    }
 };
 
 program.planner = {
@@ -30,12 +33,12 @@ tabs.switchTo = function(t) {
     $("#" + t + "-button").toggleClass("tab-selected");
 
     $("#" + program.activeTab + "-button").toggleClass("tab-selected");
-    
+
     // call the load callback
     if (tabs[t] && tabs[t].load) {
         tabs[t].load(program.calendar, program.schedule, program);
     }
-    
+
     // update whats visible
     if (program.activeTab === t) {
         // do nothing, but allow the load callback to fire (see above)
@@ -52,7 +55,7 @@ tabs.switchTo = function(t) {
         $("#" + t).show();
     }
     program.activeTab = t;
-    
+
     window.location.hash = t;
 };
 
@@ -64,25 +67,25 @@ tabs.tabEvent = function(e) {
     // if [this].[id] === [something]-button, switch to element [something]
     var tab = $(e.target).attr("id").toLowerCase();
     tab = tab.replace("-button", "");
-    
+
     if (program.activeTab === tab) {
         tabs.switchTo("about");
     } else {
         tabs.switchTo(tab);
     }
 };
-    
+
 var init = function() {
     tabs.schedule.tableDiv = $("#schedule-table");
     tabs.schedule.classList = $("#schedule-class-list");
     tabs.schedule.styler = $("#schedule-styler");
     tabs.schedule.radioName = "schedule-class";
     tabs.schedule.addButton = $("#schedule-class-add");
-    
+
     tabs.planner.div = $("#planner");
-    
+
     tabs.settings.init(program.calendar, program.schedule, program);
-    
+
     tabs.calendar.init(program.calendar, program.schedule, program);
     tabs.calendar.div = $("#calendar-year");
     tabs.calendar.dayTypeSelector = $("#calendar-day-types");
@@ -92,9 +95,9 @@ var init = function() {
 var stringHashCode = function(s) {
     // from http://stackoverflow.com/q/7616461
     var hash = 0, i, chr, len;
-    
+
     if (s.length == 0) return hash;
-    
+
     for (i = 0, len = s.length; i < len; i++) {
         chr   = s.charCodeAt(i);
         hash  = ((hash << 5) - hash) + chr;
@@ -107,13 +110,13 @@ $(window).on('message', function(e) {
     // jQuery doesn't support post message so we need the originalEvent
     var data = e.originalEvent.data;
     console.log("info: received data from server");
-    
+
     if (!localStorage.getItem(program.save.calendar)) {
         program.calendar.fromDataText(data);
     } else {
         console.log('info: did not load calendar becasue it is saved locally');
     }
-    
+
     if (!localStorage.getItem(program.save.schedule)) {
         program.schedule.fromDataText(data);
     } else {
@@ -127,18 +130,20 @@ $(window).on('unload', function(e) {
         localStorage.clear();
         localStorage.setItem(program.save.calendar, program.calendar.toJSON());
         localStorage.setItem(program.save.schedule, program.schedule.toJSON());
+        localStorage.setItem(program.save.settings.planner,
+                             JSON.stringify(program.planner));
     }
 });
 
 $(document).ready( function() {
     var n, attr, i;
-    
+
     // try to load a calendar from the server directly
     $.get( "school.txt", null, function(data) {
         console.log('info: found school.txt on server');
         window.postMessage(data, '*');
     }, "text");
-    
+
     // check if local storage exists
     try {
         localStorage.setItem('localStorage-test', 'localStorage-test');
@@ -148,7 +153,7 @@ $(document).ready( function() {
               "browser, such as Chrome or Firefox.");
         program.saving = false;
     }
-    
+
     // load from local storage (saving should only be false now if no Storage)
     if (program.saving) {
         i = localStorage.getItem(program.save.calendar);
@@ -161,8 +166,13 @@ $(document).ready( function() {
             console.log("info: found locally stored schedule, loading");
             program.schedule.fromJSON(i);
         }
+        i = localStorage.getItem(program.save.settings.planner)
+        if (i) {
+            i = JSON.parse(i);
+            program.planner = i;
+        }
     }
-    
+
     // convert each main div into a selectable button
     $("#tabs").children().each( function() {
         n = $(this).attr("id");
