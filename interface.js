@@ -19,6 +19,45 @@ program.save = {
     }
 };
 
+program.storage = {};
+
+program.storage.load = function(ignoreSaving) {
+    // load from local storage (saving should only be false now if no Storage)
+    if (!program.saving && !ignoreSaving) {
+        return;
+    }
+
+    i = localStorage.getItem(program.save.calendar);
+    if (i) {
+        console.log("info: found locally stored calendar, loading");
+        program.calendar.fromJSON(i);
+    }
+    i = localStorage.getItem(program.save.schedule);
+    if (i) {
+        console.log("info: found locally stored schedule, loading");
+        program.schedule.fromJSON(i);
+    }
+    i = localStorage.getItem(program.save.settings.planner)
+    if (i) {
+        i = JSON.parse(i);
+        program.planner = i;
+        console.log("info: loaded planner settings");
+    }
+};
+
+program.storage.save = function(ignoreSaving) {
+    if (!program.saving && !ignoreSaving) {
+        return;
+    }
+
+    console.log("info: saving...");
+    localStorage.clear();
+    localStorage.setItem(program.save.calendar, program.calendar.toJSON());
+    localStorage.setItem(program.save.schedule, program.schedule.toJSON());
+    localStorage.setItem(program.save.settings.planner,
+                         JSON.stringify(program.planner));
+}
+
 program.planner = {
     keepEmpty: false,
     showPeriod: true
@@ -126,13 +165,7 @@ $(window).on('message', function(e) {
 
 $(window).on('unload', function(e) {
     // does not work (reliably?) in all browsers
-    if (program.saving) {
-        localStorage.clear();
-        localStorage.setItem(program.save.calendar, program.calendar.toJSON());
-        localStorage.setItem(program.save.schedule, program.schedule.toJSON());
-        localStorage.setItem(program.save.settings.planner,
-                             JSON.stringify(program.planner));
-    }
+    program.storage.save();
 });
 
 $(document).ready( function() {
@@ -154,24 +187,7 @@ $(document).ready( function() {
         program.saving = false;
     }
 
-    // load from local storage (saving should only be false now if no Storage)
-    if (program.saving) {
-        i = localStorage.getItem(program.save.calendar);
-        if (i) {
-            console.log("info: found locally stored calendar, loading");
-            program.calendar.fromJSON(i);
-        }
-        i = localStorage.getItem(program.save.schedule);
-        if (i) {
-            console.log("info: found locally stored schedule, loading");
-            program.schedule.fromJSON(i);
-        }
-        i = localStorage.getItem(program.save.settings.planner)
-        if (i) {
-            i = JSON.parse(i);
-            program.planner = i;
-        }
-    }
+    program.storage.load();
 
     // convert each main div into a selectable button
     $("#tabs").children().each( function() {
