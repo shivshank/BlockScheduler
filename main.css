@@ -105,7 +105,8 @@ td {
 }
 
 .cp-radio-container {
-    display: inline-block;
+    display: block;
+	text-align: center;
 }
 
 .cp-radio-container input[type="radio"],
