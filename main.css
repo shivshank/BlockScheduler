@@ -3,7 +3,7 @@ html {
 	padding: 0px;
 	margin: 0px;
 	background: #EEEEEE;
-    
+
     overflow-y: scroll;
 }
 
@@ -20,19 +20,19 @@ h1, h2, h3, h4, h5, h6 {
     width: 160px;
     margin: 0px;
     padding: 0px;
-    
+
     background: #222;
-    
+
     border-right: 5px solid #EE2222;
 }
 
 #tab-title {
     display: inline-block;
     margin: 10px;
-    
+
     color: #EEE;
     text-align: left;
-    
+
     font-family: Tahoma, Geneva, serif;
     font-weight: normal;
 }
@@ -43,16 +43,16 @@ h1, h2, h3, h4, h5, h6 {
 
 .tab-selector {
     display: inline-block;
-    
+
     padding: 0px;
     margin: 10px 0px;
     width: 100%;
-    
+
     text-align: center;
     color: #EEE;
-    
+
     cursor: pointer;
-    
+
     transition: padding 0.2s;
     -webkit-transition: padding 0.2s;
 }
@@ -98,12 +98,12 @@ table {
 td {
     border: 3px solid #333333;
 }
- 
+
 .cp {
     width: 650px;
     margin: 5px auto;
 }
- 
+
 .cp-radio-container {
     display: inline-block;
 }
@@ -133,27 +133,27 @@ td {
 		margin: 0px;
 		padding: 0px;
 	}
-    
+
     .cp {
         display: none;
     }
-    
+
 	#tab-header {
 		display: none;
 	}
-    
+
     .tab {
         width: auto;
         margin: 0px;
         padding: 0px;
     }
-    
+
     thead {
         font-weight: bold;
         background: #FFFFFF;
         color: #000;
     }
-    
+
     .info {
         display: none;
     }

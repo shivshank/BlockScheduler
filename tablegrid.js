@@ -2,7 +2,7 @@ var tableGrid = {
 	create: function(rowWidth1, rowWidth2, rowWidthN) {
 		var args = Array.prototype.slice.call(arguments),
             i, j, t;
-		
+
         t = Object.create(tableGrid);
         t.table = $("<table>");
         t.head = $('<thead>');
@@ -11,11 +11,11 @@ var tableGrid = {
         t.body.appendTo(t.table);
         t.foot = $('<tfoot>');
         t.table.append(t.foot);
-        
+
         for (i=0; i < args.length; i+=1) {
             row = $("<tr>");
             t.body.append( row );
-            for (j=0; j < args[i]; j+=1) { 
+            for (j=0; j < args[i]; j+=1) {
                 row.append( $("<td>") );
             }
         }
@@ -59,13 +59,13 @@ var tableGrid = {
         var x, y,
             startX = startX || 0, startY = startY || 0,
             endX = endX || 0, endY = endY || 0;
-        
+
         // OPTOMIZE: Stop iterating over cells out of bounds
-        
+
         if (endY === 0) {
             endY = this.body.children().length;
         }
-            
+
         y = 0;
         this.body.children().each( function(i, v) {
             if (endX === 0) {

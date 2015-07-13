@@ -20,10 +20,10 @@
 #planner tbody td {
 	border: 5px solid #333333;
     border-width: 3px 1px 3px 1px;
-    
+
 	width: 100px;
 	padding: 0px;
-    
+
 	vertical-align: top;
 }
 
@@ -62,26 +62,26 @@
         padding: 0px;
         margin: 10px 0px 0px 0px;
     }
-    
+
     .planner table {
         width: 100%;
     }
-    
+
 	.planner-month {
 		max-height: 10in;
 		padding: 0px;
         margin: 0px;
-        
+
 		page-break-after: always;
 		page-break-inside: avoid;
 	}
-    
+
     #planner table {
         width: 8in;
         margin: 0px auto;
         border: none;
     }
-    
+
     #planner td {
         border-color: #000 !important;
     }

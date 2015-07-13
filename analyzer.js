@@ -35,7 +35,7 @@ analyzer.dayCounter = function() {
 
     var month = params.start.getMonth();
     var d = 0;
-    
+
     return function(i, block) {
         if (i.getMonth() !== month) {
             month = i.getMonth();
@@ -59,12 +59,12 @@ analyzer.sessionCounter = function(onBlocks) {
     onBlocks = onBlocks.map( function(j) {
         return reverser[j];
     });
-    
+
     var on = onBlocks.indexOf(0) !== -1? true : false;
-    
+
     results.stretches = on? [] : [0];
     var stretches = results.stretches;
-    
+
     return function(i, block, daysOff) {
         if (!on && onBlocks.indexOf(block) !== -1) {
             // landed on an on day
@@ -106,7 +106,7 @@ var mainloop = function(onDays) {
     var bc = analyzer.blockCounter();
     var sc = analyzer.sessionCounter(onDays);
     results.days = [];
-    
+
     forEachSchoolDay(params.start, params.end,
         function(i, block, daysOff) {
             dc(i, block);
@@ -116,7 +116,7 @@ var mainloop = function(onDays) {
             results.days.push( day(i, block) );
         }
     );
-    
+
     // return the amount of class time onDays received in minutes
     return params.period_length * onDays.map( function(d) {
         return results.blockDays[d];
@@ -147,14 +147,14 @@ var evaluateBlockScheduling = function() {
     tests = tests.map( function(i) {return i.split("");} );
 
     var output = [];
-    
+
     tests.forEach( function(i) {
         output.push(classResult(i));
     });
 
     console.log("Days In Months:", results.daysInMonth);
     console.log("Total school days:", results.totalDays);
-    
+
     var stringify = function() {
         var t = this;
         return "{ " + Object.keys(this).map( function(i) {
@@ -162,7 +162,7 @@ var evaluateBlockScheduling = function() {
         }).join(", ") + " }";
     };
     console.log("Number of Sessions:", results.blockDays);
-    
+
     results.blockScheduling = output;
 };
 
@@ -174,21 +174,21 @@ var evaluateOldScheduling = function() {
         day("January 30 2015", 1)
     ];
     params.period_length = 40;
-    
+
     var tests = [
         "AB",
         "A",
         "B"
     ];
     tests = tests.map( function(i) {return i.split("");} );
-    
+
     var output = [];
-    
+
     tests.forEach( function(i) {
         output.push(classResult(i));
     });
-    
+
     results.oldScheduling = output;
-    
+
     params.rigdays = rig;
 };

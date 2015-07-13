@@ -101,7 +101,7 @@
     position: absolute;
     top: 2px;
     left: 2px;
-    
+
     font-size: 0.5em;
 }
 
@@ -140,17 +140,17 @@
     #calendar {
         text-align: center;
     }
-    
+
     #calanedar-year {
         width: auto;
         display: inline-block;
         text-align: center;
     }
-    
+
     .calendar-month td {
         border: 1px solid #000;
     }
-    
+
     .calendar-month thead, .calendar-month table {
         border: none
     }

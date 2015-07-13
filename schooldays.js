@@ -2,7 +2,7 @@ var parseDataText = function(txt) {
     // Use this function to read the data files created by Calendar and Schedule
     var lines = txt.replace("\r\n", "\n").split("\n");
     var field = "", out = {};
-    
+
     lines.forEach( function(i) {
         if (i[0] !== "#" && i[0] !== ":" && i.trim() != "" && field) {
             out[field].push(i.trim());
@@ -11,14 +11,14 @@ var parseDataText = function(txt) {
             out[field] = [];
         }
     });
-    
+
     return out;
 };
 var toDataText = function(txt) {
     txt = [].concat(txt);
     return txt.join("\n") + "\n";
 };
-    
+
 var Calendar = function(start, end) {
     this.start = start;
     this.end = end;
@@ -76,19 +76,19 @@ Calendar.prototype.toJSON = function(spaces) {
                                        block: i.block,
                                        periods: i.periods,
                                        tags: i.tags};};
-    
+
     p = [this.SET_DAY, this.HALF_DAY, this.NO_CLASS, this.NO_SCHOOL];
-    
+
     c.start = convert(this.start);
     c.end = convert(this.end);
-    
+
     for (i=0; i < p.length; i+=1) {
         c[p[i]] = [];
         for (j=0; j < this._data[p[i]].length; j+=1) {
             c[p[i]].push( convert(this._data[p[i]][j]) );
         }
     }
-    
+
     return JSON.stringify(c, null, spaces || 0);
 };
 Calendar.prototype.fromJSON = function(j) {
@@ -99,7 +99,7 @@ Calendar.prototype.fromJSON = function(j) {
     this._data[this.NO_CLASS] = t[this.NO_CLASS].map(convert);
     this._data[this.SET_DAY] = t[this.SET_DAY].map(convert);
     this._data[this.HALF_DAY] = t[this.HALF_DAY].map(convert);
-    
+
     this.start = convert(t.start);
     this.end = convert(t.end);
 };
@@ -108,14 +108,14 @@ Calendar.prototype.fromDataText = function(txt) {
     window.demo = o;
     this.start = day(o.START[0]);
     this.end = day(o.END[0]);
-    
+
     var mapper = function(i) {
         return day(i.trim());
     };
-    
+
     this._data[this.NO_SCHOOL] = o["NO SCHOOL"].map(mapper);
     this._data[this.NO_CLASS] = o["NO CLASS"].map(mapper);
-    
+
     this._data[this.SET_DAY] = o["SET DAY"].map(function(i) {
         var d = i.trim().split("|");
         return day(d[0].trim(), {block: d[1].trim()});
@@ -127,7 +127,7 @@ Calendar.prototype.fromDataText = function(txt) {
 };
 Calendar.prototype.toDataText = function() {
     var o = "", add = toDataText;
-    
+
     o += add(":START");
     o += add(this.formatDate(this.start));
     o += add(":END");
@@ -145,18 +145,18 @@ Calendar.prototype.toDataText = function() {
         return Calendar.prototype.formatDate.call(null, d) +
                " | " + d.periods.join(" ");
     }));
-    
+
     return o;
 };
 Calendar.prototype.isDay = function(day_type, day) {
     var i;
-    
+
     for (i=0; i < this._data[day_type].length; i+=1) {
         if (dayEquals(this._data[day_type][i], day)) {
             return this._data[day_type][i];
         }
     }
-    
+
     return null;
 };
 Calendar.prototype.getDayType = function(day) {
@@ -198,7 +198,7 @@ var Schedule = function(days, periods) {
 Schedule.prototype.addPeriod = function(p) {
     var i;
     this.periods.push(p.toString());
-    
+
     // adjust all the indices of other classes (in reverse order)
     for (i = (this.periods.length - 1) * (this.days.length - 1);
          i >= this.periods.length - 1; i -= this.periods.length - 1) {
@@ -226,7 +226,7 @@ Schedule.prototype.removePeriod = function(p) {
     for (i=indices.length-1; i >= 0; i-=1) {
         this.array.splice(indices[i], 1);
     }
-    
+
     this.periods.splice(this.periods.indexOf(p), 1);
 };
 Schedule.prototype.removeDay = function(d) {
@@ -241,11 +241,11 @@ Schedule.prototype.removeDay = function(d) {
 };
 Schedule.prototype.toJSON = function(spaces) {
     var s = {};
-    
+
     s.days = this.days;
     s.periods = this.periods;
     s.array = this.array;
-    
+
     return JSON.stringify(s, null, spaces || 0);
 };
 Schedule.prototype._prepsField = function() {
@@ -256,7 +256,7 @@ Schedule.prototype._prepsField = function() {
         if (v === undefined || v === null) {
             continue;
         }
-        
+
         if (this.preps[v.name] === undefined || this.preps[v.name] === null) {
             this.preps[v.name] = 1;
         } else {
@@ -282,7 +282,7 @@ Schedule.prototype.fromDataText = function(txt) {
 };
 Schedule.prototype.toDataText = function() {
     var o = "", add = toDataText;
-    
+
     o += add(":DAYS");
     o += add(this.days);
     o += add(":PERIODS");
@@ -315,7 +315,7 @@ Schedule.prototype.getBlock = function(day, period) {
 Schedule.prototype.removeBlock = function(day, period) {
     var i = this.blockId(day, period),
         section = this.getBlock(day, period);
-        
+
     // decrement occurrences
     if (section) {
         this.preps[section.name] -= 1;
@@ -324,7 +324,7 @@ Schedule.prototype.removeBlock = function(day, period) {
             delete this.preps[section.name];
         }
     }
-    
+
     this.array[i] = null;
 };
 Schedule.prototype.setBlock = function(day, period, section, meta) {
@@ -335,7 +335,7 @@ Schedule.prototype.setBlock = function(day, period, section, meta) {
         name: name,
         meta: meta || {}
     };
-    
+
     this.removeBlock(day, period);
     // increment the occurrences of new section
     if (!this.preps.hasOwnProperty(name)) {
@@ -345,14 +345,14 @@ Schedule.prototype.setBlock = function(day, period, section, meta) {
     } else {
         this.preps[name] += 1;
     }
-    
+
     this.fire("setSection", [day, period, section]);
     this.array[i] = section;
 };
 Schedule.prototype.getBlocks = function(sectionName) {
     // returns an array of {day, period, section: {name, meta}} objects
     var r = [], i, b;
-    
+
     for (i=0; i < this.array.length; i+=1) {
         if (this.array[i] && this.array[i].name === sectionName) {
             b = this.fromBlockId(i);
@@ -360,13 +360,13 @@ Schedule.prototype.getBlocks = function(sectionName) {
             r.push(b);
         }
     }
-    
+
     return r;
 };
 Schedule.prototype.removeSection = function(sectionName) {
     var blocks = this.getBlocks(sectionName),
         i;
-    
+
     for (i=0; i < blocks.length; i+=1) {
         this.removeBlock(blocks[i].day, blocks[i].period);
     }
@@ -374,7 +374,7 @@ Schedule.prototype.removeSection = function(sectionName) {
 Schedule.prototype.renameSection = function(sectionName, newName) {
     var blocks = this.getBlocks(sectionName),
         i;
-    
+
     for (i=0; i < blocks.length; i+=1) {
         this.setBlock(blocks[i].day, blocks[i].period,
                       newName, blocks[i].section.meta);
@@ -387,23 +387,23 @@ Schedule.prototype.getDay = function(d) {
 };
 Schedule.prototype.getPeriod = function(p) {
     var r = [];
-    
+
     var d = 0;
     for (d=0; d < this.days.length; d+=1) {
         r.push( this.array[this.blockId(this.days[d], p)] );
     }
-    
+
     return r;
 };
 Schedule.prototype.isEmptyPeriod = function(p) {
     var d;
-   
+
     for (d=0; d < this.days.length; d+=1) {
         if (this.getBlock(this.days[d], p.toString())) {
             return false;
         }
     }
-    
+
     return true;
 };
 
@@ -423,16 +423,16 @@ Section.prototype.removeBlock = function(b) {
 /* Wrap date object with school day information */
 var day = function(dateStr, data) {
     var d;
-    
+
     d = new Date(dateStr);
-    
+
     if (data) {
         d.block = data.block;
         // the periods associated with this day
         d.periods = data.periods;
         d.tags = data.tags;
     }
-    
+
     return d;
 };
 
@@ -442,15 +442,15 @@ var day = function(dateStr, data) {
 day.fromGrid = function(year, month, x, y, excludeWeekends) {
     // month, x, and y are zero based
     var i, date = new Date(year, month, 1);
-    
+
     i = x + y * 7;
-    
+
     if (excludeWeekends) {
         // move x ahead to include sunday
         // (end of week is irrelevant because x should never be 6 on this grid)
         i += 1;
     }
-    
+
     // what day is the first of the month?
     // remove that from i
     // (because Sunday is zero, we don't need extra offset)
@@ -478,36 +478,36 @@ function forEachSchoolDay(cal, sched, func) {
         end = cal.end,
         daysOff = 0,
         result;
-    
+
     if (block === null || block === undefined) {
         // Is there a better way to throw exceptions, or are they this broken?
         throw "Cannot select a start block";
     }
 
     for (; i.getTime() < end.getTime() + 1; i.setDate(i.getDate() + 1)) {
-        
+
         if (!cal.isSchoolDay(i)) {
             daysOff += 1;
             continue;
         } else if (cal.isDay(cal.NO_CLASS, i)) {
             daysOff += 1;
         }
-        
+
         if (cal.isDay(cal.SET_DAY, i)) {
             block = cal.isDay(cal.SET_DAY, i).block;
         }
-        
+
         result = func(i, block, daysOff);
-        
+
         // exit if func is false
         if (result === false) {
             break;
         }
-        
+
         daysOff = 0;
         var orig = block;
         block = (sched.days.indexOf(block) + 1) % (sched.days.length);
-        
+
         block = sched.days[ block ];
     }
 };
@@ -516,7 +516,7 @@ function getBlockDay(calendar, schedule, d) {
     // returns null if day is not in the school year (ie, holiday and summer)
 
     var r = null, func, previous;
-    
+
     func = function(i, block) {
         if (dayEquals(i,d)) {
             r = block;
@@ -524,8 +524,8 @@ function getBlockDay(calendar, schedule, d) {
         }
     };
 
-    forEachSchoolDay(calendar, schedule, func);    
-    
+    forEachSchoolDay(calendar, schedule, func);
+
     return r;
 };
 
