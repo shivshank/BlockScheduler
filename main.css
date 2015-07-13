@@ -108,17 +108,26 @@ td {
     display: inline-block;
 }
 
-.cp-radio-container input[type="radio"] {
+.cp-radio-container input[type="radio"],
+.cp-radio-container input[type="checkbox"] {
     display: none;
 }
 
-.cp-radio-container input[type="radio"] + label {
+.cp-radio-container input[type="radio"] + label,
+.cp-radio-container input[type="checkbox"] + label {
     display: inline-block;
     width: 100px;
     padding: 5px;
-    border: 1px solid #000;
+    border: 1px solid #333333;
     text-align: center;
     cursor: pointer;
+}
+
+.cp-radio-container input[type="radio"]:checked + label,
+.cp-radio-container input[type="checkbox"]:checked + label {
+	box-shadow: inset 0px 0px 5px #333;
+	font-weight: bold;
+	border-width: 2px;
 }
 
 /*
