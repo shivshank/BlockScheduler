@@ -2,7 +2,7 @@
 
 tabs.createForm = function(inputAttr) {
     var i;
-    
+
     i = $("<input>");
     i.attr("type", "text");
     i.attr(inputAttr || {});
@@ -17,30 +17,30 @@ tabs.editHandler = function(inputAttr, onDone) {
     // callback is invoked with ($(target), inputVal)
     var handler = function(e) {
         var target = $(e.currentTarget), input, parent;
-        
+
         input = tabs.createForm(inputAttr);
-        
+
         parent = target.parent();
         // jQuery replaceWith removes all events; we don't want that
         parent[0].replaceChild(input[0], target[0]);
-        
+
         input.val( target.text() );
         input.select();
-        
+
         input.on("blur change", function() {
             if (!$.contains(document, input[0])) {
                 // if the input form has already been removed, then do nothing
                 // (use jQuery.contains because of Node.contains support)
                 return;
             }
-            
+
             var text = input.val();
             // use jQuery replaceWith so the form is properly cleaned up
             input.replaceWith(target);
             onDone(target, text);
         });
     };
-    
+
     return handler;
 };
 
@@ -70,12 +70,12 @@ tabs.schedule = {
     load: function(c, s, p) {
         var table, head, col, preps, i, prepLabel, prepRadio, span;
         this.tableDiv.empty();
-        
+
         table = tableGrid.create(s.days.length + 1);
         // header is separate from body height
         table.makeUniform(s.periods.length);
         table.getTable().appendTo(this.tableDiv);
-        
+
         // head is actually a reference to a tr
         head = $("<tr>").appendTo(table.getHead());
         for (col=0; col < s.days.length + 1; col+=1) {
@@ -90,12 +90,12 @@ tabs.schedule = {
                 head.append( $("<td>") );
             }
         }
-        
+
         // fill in the table
         table.forEachCell(function(cell, row, x, y) {
             var period = s.periods[y], day,
                 block;
-            
+
             if (x > 0) {
                 day = s.days[x-1];
                 block = s.getBlock(day, period);
@@ -118,7 +118,7 @@ tabs.schedule = {
 
         // add the day/period add/remove buttons
         this.addButtons(table);
-        
+
         preps = s.getPreps();
         this.classList.empty();
         for (i=0; i < preps.length; i+=1) {
@@ -133,12 +133,12 @@ tabs.schedule = {
             this.classList.append(prepRadio);
             this.classList.append(prepLabel);
         }
-        
+
         this.loadEvents(table, s);
     },
     periodEditor: function(span, txt) {
         var td = span.parent();
-        
+
         txt = txt.trim();
         if (txt === "" || program.schedule.periods.indexOf(txt) !== -1) {
             // if the user entered nothing or this period already exists
@@ -149,7 +149,7 @@ tabs.schedule = {
             // do nothing
             return;
         }
-        
+
         // update the schedule (td still holds old period)
         if (program.schedule.periods.indexOf(td.attr("data-period")) !== -1) {
             program.schedule.renamePeriod(td.attr("data-period"), txt);
@@ -157,7 +157,7 @@ tabs.schedule = {
             // period doesn't exist yet
             program.schedule.addPeriod(txt);
         }
-        
+
         // update the view/ui (span holds text, td holds meta)
         td.attr("data-period", txt);
         span.text(txt);
@@ -182,18 +182,18 @@ tabs.schedule = {
             // do nothing
             return;
         }
-        
+
         // update the schedule (td still holds old period)
         if (program.schedule.days.indexOf(td.attr("data-day")) !== -1) {
             program.schedule.renameDay(td.attr("data-day"), txt);
         } else {
             program.schedule.addDay(txt);
         }
-        
+
         // update the view/ui (span holds text, td holds meta)
         td.attr("data-day", txt);
         span.text(txt);
-        
+
         col.attr("data-day", txt);
     },
     classEditor: function(label, txt) {
@@ -215,19 +215,19 @@ tabs.schedule = {
             }
             return;
         }
-        
+
         radio.attr("id", newId);
         radio.attr("data-class", section);
         label.attr("for", newId);
         radio.prop("checked", "checked");
-        
+
         relevant.text(section).attr("data-class", section);
         label.text(section);
         program.schedule.renameSection(old, section);
     },
     scheduleEditor: function(e) {
         var tr, col, i, span, s = program.schedule;
-        
+
         switch (e.target.id) {
         case "schedule-add-day":
             // add the column
@@ -259,7 +259,7 @@ tabs.schedule = {
             span = $("<span>").addClass("schedule-period");
             span.appendTo(tr.children().eq(0));
             span.trigger("dblclick");
-            break;                
+            break;
         case "schedule-remove-period":
             if (s.periods.length > 1) {
                 tabs.schedule.tableDiv.find("tbody tr:last-child").remove();
@@ -290,25 +290,25 @@ tabs.schedule = {
             if (!section) {
                 return;
             }
-            
+
             if (section === "Eraser") {
                 s.removeBlock(day, period);
                 target.text("");
                 target.attr("data-class", "");
                 return;
             }
-            
+
             s.setBlock(day, period, section);
             target.text(section);
             target.attr("data-class", section)
         });
-        
+
         // prevent multiple calls to loadEvents from adding duplicate handlers
         this.classList.off("dblclick");
         // event handler for renaming and deleting classes
         this.classList.on("dblclick", "label", tabs.editHandler(
                           {"class": "schedule-class-input"}, this.classEditor));
-        
+
         // class list add event
         // (any unused classes will disappear on reload, see this.load)
         this.addButton.click( function() {
@@ -319,8 +319,8 @@ tabs.schedule = {
             label.appendTo(tabs.schedule.classList);
             // invoke the section editor
             label.trigger("dblclick");
-        }); 
-        
+        });
+
         // add period/day buttons
         tableGrid.getHeadCell(0, 0).on("click", this.scheduleEditor);
     },
@@ -335,25 +335,25 @@ tabs.planner = {
         var block = getBlockDay(c, s, date),
             container,
             item, day, i, half;
-        
+
         element.append( $("<h1>").text("" + date.getDate() + " " + block) );
-        
+
         if (c.isDay(c.NO_CLASS, date)) {
             return;
         }
-        
+
         container = $("<div>");
         container.appendTo(element);
-        
+
         day = s.getDay(block);
-        
+
         // TODO: Optimize Half day code...
         if (half = c.isDay(c.HALF_DAY, date)) {
             half = half.periods.map(function(i) {return s.periods.indexOf(i);});
         } else {
             half = [];
         }
-        
+
         for (i=0; i < day.length; i+=1) {
             // empty periods could be cached
             if (!p.planner.keepEmpty && s.isEmptyPeriod(s.periods[i])) {
@@ -367,11 +367,11 @@ tabs.planner = {
                 // continue before adding anything else
                 continue;
             }
-            
+
             if (p.planner.showPeriod) {
                 item.append( $("<span>").text(s.periods[i]).addClass("num") );
             }
-            
+
             if (day[i]) {
                 item.append( $("<span>").text(day[i].name) );
                 if (day[i].meta.style) {
@@ -382,7 +382,7 @@ tabs.planner = {
     },
     generateMonth: function(div, date, omitWeekends, c, s, p) {
         var table, weeks, head, dow;
-        
+
         // append header
         div.append($("<h1>").text(
                        day.months[date.getMonth()] + " " + date.getFullYear()));
@@ -393,15 +393,15 @@ tabs.planner = {
         } else {
             table = tableGrid.create(7);
         }
-        
+
         date = new Date(date.getFullYear(), date.getMonth(), 1);
-        
+
         // format the table with the correct number of weeks
         weeks = new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
         weeks = Math.ceil(weeks / 7);
         table.makeUniform(weeks);
         table.getTable().appendTo(div);
-        
+
         // head is actually the tr
         head = $("<tr>").appendTo(table.getHead());
         // fill in the days of the week header
@@ -421,7 +421,7 @@ tabs.planner = {
                 cell.addClass("no-school");
                 return;
             }
-            
+
             tabs.planner.generateDay(cell, d, c, s, p);
         });
     },
@@ -430,7 +430,7 @@ tabs.planner = {
         // (lesson plans, yearly, weekly, per class)
         var date = new Date(c.start),
             div;
-        
+
         this.div.empty();
         while (date.getTime() < c.end.getTime()) {
             div = $("<div>").addClass("planner-month").appendTo(this.div);
@@ -442,8 +442,18 @@ tabs.planner = {
 
 tabs.settings = {
     init: function(c, s, p) {
-        var txt;
-        
+        var txt, booleanSetting;
+
+        booleanSetting = function(elementId, objectRef, propName) {
+            $("#" + elementId).prop("checked", objectRef[propName]);
+            $("#" + elementId).change( function(e) {
+                objectRef[propName] = e.target.checked;
+            })
+        };
+
+        booleanSetting("s-planner-keepEmpty", p.planner, "keepEmpty");
+        booleanSetting("s-planner-showPeriod", p.planner, "showPeriod");
+
         $("#s-save-button").click( function() {
             var o = "# lines starting with hash symbols are comments,\n" +
                     "# colons mark fields\n";
@@ -452,12 +462,9 @@ tabs.settings = {
             $("#s-save-text").val(o);
             $("#s-save-text")[0].select();
         });
-        
-        $("#s-saving").prop("checked", p.saving);
-        $("#s-saving").change( function(e) {
-            p.saving = e.target.checked;
-        });
-        
+
+        booleanSetting("s-saving", p, "saving");
+
         $("#s-erase-schedule").click( function(e) {
             if (p.saving && localStorage && localStorage.removeItem) {
                 localStorage.removeItem(p.save.schedule);
@@ -465,7 +472,7 @@ tabs.settings = {
             p.undo.schedule = p.schedule;
             p.schedule = new Schedule(["A"], ["1"]);
         });
-        
+
         $("#s-erase-calendar").click( function(e) {
             if (p.saving && localStorage && localStorage.removeItem) {
                 localStorage.removeItem(p.save.calendar);
@@ -475,13 +482,13 @@ tabs.settings = {
                             new Date("August 1 " + new Date().getFullYear()),
                             new Date("June 1 " + (new Date().getFullYear()+1)));
         });
-        
+
         $("#s-load-calendar").click( function(e) {
             if (p.undo.calendar) {
                 p.calendar = p.undo.calendar;
             }
         });
-        
+
         $("#s-load-schedule").click( function(e) {
             if (p.undo.schedule) {
                 p.schedule = p.undo.schedule;
@@ -496,7 +503,7 @@ tabs.calendar = {
     toolTipFormat: null,
     createYear: function(y) {
         var month = 0, day = 1;
-        
+
     },
     init: function(c) {
         $("#calendar-update").click( function(e) {
@@ -505,10 +512,10 @@ tabs.calendar = {
             tabs.switchTo("calendar");
             return false;
         });
-        
+
         $("#calendar-halfday-periods").val("1 2 3");
         $("#calendar-setday-block").val("E");
-        
+
         $("#calendar-refresh").click( function(e) {
             program.saving = true;
             if (localStorage && localStorage.removeItem) {
@@ -523,32 +530,32 @@ tabs.calendar = {
         // remember that Date's month is zero based
         var current = new Date(c.start.getFullYear(), c.start.getMonth(), 1),
             m, year, table, header, div, dow, weeks, block, oldBlock;
-        
+
         $("#calendar-start-date").val(c.formatDate(c.start));
         $("#calendar-end-date").val(c.formatDate(c.end));
-        
+
         this.div.empty();
         this.div.off("click");
         this.div.on("click", ".calendar-day", {calendar: c}, this.eventHandler);
-        
+
         this.dayTypeSelector.off("change");
         this.dayTypeSelector.on("change", "input", this.cpTooltipEvent);
-        
+
         $("#" + tabs.calendar.toolTipFormat + "-" + this.getDayType()).show();
-        
+
         dow = $("<tr><td>M</td><td>T</td><td>W</td><td>H</td><td>F</td></tr>");
         while (current.getTime() < c.end.getTime()) {
             // for each month of the school year
             m = current.getMonth();
             year = current.getFullYear();
             header = day.months[m] + " " + year;
-            
+
             header = $("<h2>").text(header);
             div = $("<div>").addClass("calendar-month").append(header);
             this.div.append(div);
-            
+
             table = tableGrid.create(5);
-            
+
             // this counts placeholder days as "days of the month"
             weeks = new Date(year, m, 1).getDay();
             weeks += new Date(year, m+1, 0).getDate();
@@ -556,18 +563,18 @@ tabs.calendar = {
             table.makeUniform(weeks);
             table.getHead().append(dow.clone());
             div.append(table.getTable());
-            
+
             table.forEachCell(function(cell, row, x, y) {
                 // add this for event handling purposes
                 cell.addClass("calendar-day");
 
                 var d = day.fromGrid(year, m, x, y, true), halfDay;
-                
+
                 if (d.getMonth() != m) {
                     cell.addClass("placeholder");
                     return;
                 }
-                
+
                 block = getBlockDay(c, s, d);
                 if (c.isDay(c.SET_DAY, d)) {
                     cell.addClass("set-day");
@@ -586,14 +593,14 @@ tabs.calendar = {
                 } else {
                     cell.text(block);
                 }
-                
+
                 $("<span>").prependTo(cell).text(d.getDate()).addClass("date");
                 cell.wrapInner("<div class='calendar-day-div'></div>");
                 cell.attr("data-year", d.getFullYear());
                 cell.attr("data-month", d.getMonth());
                 cell.attr("data-date", d.getDate());
             });
-            
+
             // go to the next month
             current = new Date(year, m + 1, 1);
         }
@@ -601,19 +608,19 @@ tabs.calendar = {
     getDayType: function() {
         var c = this.dayTypeSelector.children(),
             i, dayType = "erase";
-        
+
         for (i=0; i < c.length; i += 1) {
             if (c[i].nodeName.toLowerCase() != "input") {
                 continue;
             }
-            
+
             if (c[i].checked) {
                 dayType = c[i].id.split("-");
                 dayType = dayType[dayType.length - 1];
                 break;
             }
         }
-        
+
         return dayType;
     },
     eventHandler: function(e) {
@@ -621,14 +628,14 @@ tabs.calendar = {
         var target = $(e.currentTarget),
             calendar = e.data.calendar,
             date, meta;
-        
+
         if (!target.hasClass("calendar-day")) {
             return;
         }
-        
+
         date = new Date(target.attr("data-year"), target.attr("data-month"),
                         target.attr("data-date"));
-        
+
         switch(tabs.calendar.getDayType()) {
             case "erase":
                 calendar.eraseDay(date);
@@ -650,16 +657,16 @@ tabs.calendar = {
             default:
                 console.log("error: unknown day type selected");
         }
-        
+
         tabs.switchTo("calendar");
     },
     cpTooltipEvent: function(e) {
         var day = $(e.currentTarget).prop("id").split("-");
         day = day[day.length - 1];
-        
+
         // hide all other tips
         $("." + tabs.calendar.toolTipFormat).hide();
-        
+
         // unhide this tip
         $("#" + tabs.calendar.toolTipFormat + "-" + day).show();
     }

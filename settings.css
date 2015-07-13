@@ -1,15 +1,15 @@
 .settings-group {
     display: inline-block;
-    
+
     width: 300px;
     padding: 15px;
     margin: 10px;
-    
+
     border: 1px solid black;
-    
+
     background: #FFFFFF;
     box-shadow: 5px 5px 15px #333333;
-    
+
     text-align: left;
     vertical-align: top;
 }
@@ -29,7 +29,6 @@
 #settings label {
     padding: 5px 0px;
     font-style: italic;
-    float: left;
     clear: left;
 }
 

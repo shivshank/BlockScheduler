@@ -80,6 +80,19 @@
             <div id="planner" class="tab" data-name="See it"></div>
             <div id="settings" class="tab" data-name="Customize it">
                 <h1>Settings</h1>
+                <div class="settings-group" id="settings-planner">
+                    <h2>Planner Settings</h2>
+                    <div>
+                        <input type="checkbox" name="s-planner-keepEmpty" id="s-planner-keepEmpty"/>
+                            <label for="s-planner-keepEmpty">Keep Empty Periods</label><br />
+                    </div>
+                    <div>
+                        <input type="checkbox" name="s-planner-showPeriod" id="s-planner-showPeriod" checked="checked"/>
+                            <label for="s-planner-showPeriod">Display Period Numbers</label><br />
+                    </div>
+                    <p>By default, if a period has no sections/classes, that period will not appear on the planner. "Keep Empty Periods" changes that.</p>
+                    <p>Displaying period numbers may take up space, so disabling them is one way to fit more on each line in the planner.</p>
+                </div>
                 <div class="settings-group" id="settings-saving">
                     <h2>Save Control</h2>
                     <input type="checkbox" name="s-saving" id="s-saving"/>
