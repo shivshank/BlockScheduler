@@ -11,6 +11,9 @@
         <link rel="stylesheet" type="text/css" href="calendar.css">
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+        <script src="jquery-2.1.3.min.js"></script>
+
         <script src="schooldays.js"></script>
         <script src="tablegrid.js"></script>
         <script src="calendarbuilder.js"></script>
@@ -54,12 +57,26 @@
                     <p>Only periods with classes in them will appear on the planner under "See it" by default. For example, if the Lunch period has no classes in its row, then nothing will appear for that period in the generated planner.</p>
                     <p>Double click on a period or day to rename it. Use the tiny buttons on the far right and bottom of the table to add and remove days/periods. </p>
                 </div>
+                <div id="schedule-actions-container" class="cp">
+                    <div class="cp-radio-container" id="schedule-cp-radio">
+                        <input id="schedule-actions-classes" type="radio" name="schedule-actions" checked="checked"/>
+                            <label for="schedule-actions-classes">Set Classes</label>
+                        <input id="schedule-actions-styler" type="radio" name="schedule-actions"/>
+                            <label for="schedule-actions-styler">Styler</label>
+                    </div>
+                </div>
                 <div id="schedule-styler" class="cp">
-                    <div class="cp-radio-container">
-                        <input id="schedule-color-1" class="schedule-color" type="radio" name="schedule-color" checked="checked" />
-                            <label for="schedule-color-1">color</label>
-                        <input id="schedule-color-2" type="radio" name="schedule-color" />
-                            <label for="schedule-color-2">color</label>
+                    <div id="schedule-quickstyles" class="cp-radio-container">
+                        <input id="schedule-style-none" type="radio" name="schedule-style" data-style="{}"/><label for="schedule-style-none">None</label>
+                        <input id="schedule-style-red" type="radio" name="schedule-style" data-style='{"background-color":"#E22", "font-weight":"bold"}'/><label for="schedule-style-red">Red</label>
+                        <input id="schedule-style-green" type="radio" name="schedule-style" data-style='{"background-color":"#7C4", "font-weight":"bold", "color": "#222"}'/><label for="schedule-style-green">Green</label>
+                        <input id="schedule-style-blue" type="radio" name="schedule-style" data-style='{"background-color":"#33F"}'/><label for="schedule-style-blue">Blue</label>
+                        <input id="schedule-style-yellow" type="radio" name="schedule-style" data-style='{"background-color":"#EE3", "font-weight":"bold"}'/><label for="schedule-style-yellow">Yellow</label>
+                        <input id="schedule-style-dark" type="radio" name="schedule-style" data-style='{"background-color":"#444", "color":"#EEE"}'/><label for="schedule-style-dark">Dark</label>
+                        <input id="schedule-style-purple" type="radio" name="schedule-style" data-style='{"background-color":"#A0A", "font-weight":"bold", "color":"#EEE"}'/><label for="schedule-style-purple">Purple</label>
+                        <input id="schedule-style-pink" type="radio" name="schedule-style" data-style='{"background-color":"#F88", "font-weight":"bold", "color":"#222"}'/><label for="schedule-style-pink">Pink</label>
+                        <input id="schedule-style-lble" type="radio" name="schedule-style" data-style='{"background-color":"#99F", "font-weight":"bold", "color":"#222"}'/><label for="schedule-style-lble">Light Blue</label>
+                        <input id="schedule-style-orange" type="radio" name="schedule-style" data-style='{"background-color":"#F93", "font-weight":"bold", "color":"#222"}'/><label for="schedule-style-orange">Orange</label>
                     </div>
                 </div>
                 <div id="schedule-container">

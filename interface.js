@@ -117,9 +117,14 @@ tabs.tabEvent = function(e) {
 var init = function() {
     tabs.schedule.tableDiv = $("#schedule-table");
     tabs.schedule.classList = $("#schedule-class-list");
+    tabs.schedule.listContainer = $("#schedule-classes");
     tabs.schedule.styler = $("#schedule-styler");
     tabs.schedule.radioName = "schedule-class";
     tabs.schedule.addButton = $("#schedule-class-add");
+    tabs.schedule.actionModeName = "schedule-actions";
+    tabs.schedule.quickstyles = $("#schedule-quickstyles");
+    tabs.schedule.quickstyleName = "schedule-style";
+    tabs.schedule.init();
 
     tabs.planner.div = $("#planner");
 

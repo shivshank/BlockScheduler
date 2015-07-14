@@ -50,6 +50,26 @@ tabs.schedule = {
     styler: null,
     radioName: null,
     addButton: null,
+    actionModeName: null,
+    quickstyles: null,
+    quickstyleName: null,
+    init: function() {
+        var s;
+
+        // apply data style of input element to adjacent label element
+        $("#" + this.actionModeName + "-classes").prop("checked", true);
+
+        this.quickstyles.children().each( function(i, v) {
+            v = $(v);
+            if (v.attr("data-style")) {
+                // if the element has data-style attribute, store it
+                s = v.attr("data-style");
+            } else {
+                // apply the last stored style
+                v.css(JSON.parse(s));
+            }
+        });
+    },
     addButtons: function(tablegrid) {
         var parent, td;
         // assign td to the very first td in the head
@@ -271,7 +291,67 @@ tabs.schedule = {
             break;
         }
     },
+    setCellStyle: function(s, target, day, period) {
+        var c = this.getSelectedStyle(),
+            section = s.getBlock(day, period);
+
+        if (!section || !c) {
+            return;
+        }
+
+        // remove the style attribute completely so styles dont "bleed" over
+        target.removeAttr("style");
+
+        // erase the style if none is selected
+        if (c.name === this.quickstyleName + '-none') {
+            s.getBlock(day, period).meta.style = {};
+            return;
+        }
+        
+        // otherwise update the table and the schedule section object
+        target.css(c.style);
+        section.meta.style = c.style;
+    },
+    setCellClass: function(s, target, day, period) {
+        var section = this.getSelectedClass();
+
+        if (!section) {
+            return;
+        }
+
+        if (section === "Eraser") {
+            s.removeBlock(day, period);
+            target.text("");
+            target.attr("data-class", "");
+            target.removeAttr("style");
+            return;
+        }
+
+        s.setBlock(day, period, section);
+        target.text(section);
+        target.attr("data-class", section)
+    },
     loadEvents: function(tableGrid, s) {
+        // attach handlers for switching edit action mode
+        $("input[type='radio'][name='" + this.actionModeName + "']")
+            .off("change").change( function(e) {
+                if (!e.target.checked) {
+                    return;
+                }
+
+                if (e.target.id === tabs.schedule.actionModeName + "-classes") {
+                    tabs.schedule.styler.slideUp();
+                    tabs.schedule.listContainer.css("opacity", 1);
+                    tabs.schedule.listContainer.css("cursor", "auto");
+                } else if (e.target.id === tabs.schedule.actionModeName + "-styler") {
+                    tabs.schedule.styler.slideDown();
+                    // we want it to take up space still, so set opacity
+                    tabs.schedule.listContainer.css("opacity", 0);
+                    tabs.schedule.listContainer.css("cursor", "default");
+                }
+            }
+        );
+
         // attach editing handlers
         // for period
         tableGrid.getBody().on("dblclick", ".schedule-period", tabs.editHandler(
@@ -282,25 +362,18 @@ tabs.schedule = {
 
         // event handler for each cell in the table (excluding period headers)
         tableGrid.getBody().on("click", "td:not(:first-child)", function(e) {
-            var section = tabs.schedule.getSelectedClass(),
-                target = $(e.currentTarget),
+            var target = $(e.currentTarget),
                 day = target.attr("data-day"),
-                period = target.attr("data-period");
+                period = target.attr("data-period"),
+                mode = $("input[name='" + tabs.schedule.actionModeName +
+                         "']:checked");
 
-            if (!section) {
-                return;
+            if (mode[0].id === tabs.schedule.actionModeName + "-styler") {
+                tabs.schedule.setCellStyle(s, target, day, period);
+            } else {
+                // assume classes if (in any event) no radio is selected
+                tabs.schedule.setCellClass(s, target, day, period);
             }
-
-            if (section === "Eraser") {
-                s.removeBlock(day, period);
-                target.text("");
-                target.attr("data-class", "");
-                return;
-            }
-
-            s.setBlock(day, period, section);
-            target.text(section);
-            target.attr("data-class", section)
         });
 
         // prevent multiple calls to loadEvents from adding duplicate handlers
@@ -325,7 +398,11 @@ tabs.schedule = {
         tableGrid.getHeadCell(0, 0).on("click", this.scheduleEditor);
     },
     getSelectedClass: function() {
-        return $("input[name=schedule-class]:checked").attr("data-class");
+        return $("#schedule input[name=schedule-class]:checked").attr("data-class");
+    },
+    getSelectedStyle: function() {
+        var s = $("#schedule input[name=" + this.quickstyleName + "]:checked")
+        return {name: s[0].id, style: JSON.parse(s.attr("data-style"))};
     }
 };
 

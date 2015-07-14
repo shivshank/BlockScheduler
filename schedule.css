@@ -7,18 +7,21 @@
     margin: 0px;
     padding: 0px;
     text-align: right;
-    
+
     width: 150px;
-    
+
     height: 100%;
     vertical-align: top;
+
+    transition: opacity 0.5s linear;
+    -webkit-transition: opacity 0.5s linear;
 }
 
 #schedule-classes label {
     display: block;
     width: auto;
     border: none;
-    
+
     padding: 5px;
     text-align: right;
     transition: padding-right 0.2s;
@@ -30,6 +33,7 @@
 #schedule-classes input:checked + label {
     padding-right: 15px;
     font-weight: bold;
+    box-shadow: none;
 }
 
 #schedule-classes-header {
@@ -38,18 +42,18 @@
     margin: 0px 0px 5px auto;
     width: 100px;
     height: 50px;
-    
+
     padding: 0px;
-    
+
     border-radius: 10px 0px 0px 10px;
-    
-    border: 3px solid #3366FF;
+
+    border: 3px solid #333333;
     border-right: none;
     color: #EEE;
     font-weight: bold;
-    
-    background: #3366FF;
-    
+
+    background: #333333;
+
     overflow: hidden;
 }
 #schedule-classes-header > h2 {
@@ -58,32 +62,32 @@
     transform: translateY(-50%);
     padding: 0px;
     margin: 0px;
-    
+
     font-size: 1em;
     font-family: "Lucida Sans Unicode", "Lucida Grande", Arial, sans-serif;
 }
 
 #schedule-class-add {
     display: inline-block;
-    
+
     width: 75px;
     padding: 0px;
     margin: 5px 0px;
     height: 1.9em;
     font-weight: bold;
     color: #EEE;
-    
+
     text-align: center;
 
     border-radius: 10px 0px 0px 10px;
-    
+
     border: 3px solid #3366FF;
     border-right: none;
     background: #3366FF;
-    
+
     transition: background 0.5s linear;
     -webkit-transition: background 0.5s linear;
-    
+
     cursor: pointer;
 }
 #schedule-class-add:hover {
@@ -103,25 +107,31 @@
 }
 
 #schedule-styler {
-    display: block;
+    display: none;
+    border: 1px solid #333333;
 }
-#schedule-styler label {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    overflow: hidden;
-    
-    border: none;
+
+#schedule-styler > div {
+    padding: 5px;
+    margin: 0px;
 }
-#schedule-styler label:hover, #schedule-styler input:checked + label{
-    border: 2px solid #000;
+#schedule-styler > div:not(:last-child) {
+    border-right: 1px solid #333333;
+}
+
+#schedule-quickstyles input[type='radio'] + label {
+    margin: 2px;
+}
+
+#schedule-quickstyles input[type='radio']:checked + label {
+    border-width: 1px;
 }
 
 #schedule-table {
     position: relative;
     display: inline-block;
     vertical-align: top;
-    border-left: 5px solid #3366FF;
+    border-left: 3px solid #333333;
 }
 
 #schedule-table thead td:first-child {
@@ -136,7 +146,7 @@
     width: 1em;
     height: 1em;
     font-size: 0.8em;
-    
+
     cursor: pointer;
 }
 /* Add and remove buttons*/
@@ -187,7 +197,7 @@
     width: 90px;
     padding: 5px;
     margin: 0px;
-    
+
     text-align: center;
     vertical-align: middle;
     border: none;
@@ -198,7 +208,7 @@
 #schedule-table > table td {
     width: 100px;
     height: 50px;
-    
+
     text-align: center;
     vertical-align: middle;
 }
@@ -214,20 +224,24 @@
     #schedule-styler, #schedule-classes {
         display: none;
     }
-    
+
     #schedule-table {
         border: none;
         width: 100%;
         margin: 0px;
         padding: 0px;
     }
-    
+
+    #schedule-table .remove, #schedule-table .add {
+        display: none;        
+    }
+
     #schedule-table > table {
         border: none;
         width: 90%;
         margin: 10px auto;
     }
-    
+
     #schedule-table > table td {
         border: 1px solid #000;
     }
