@@ -143,11 +143,11 @@ tabs.schedule = {
         this.classList.empty();
         for (i=0; i < preps.length; i+=1) {
             prepRadio = $("<input>").attr("type", "radio")
-                                    .attr("id", "schedule-class-" + preps[i])
+                                    .attr("id", "schedule-class-" + i)
                                     .attr("name", "schedule-class")
                                     .attr("data-class", preps[i]);
 
-            prepLabel = $("<label>").attr("for", "schedule-class-" + preps[i])
+            prepLabel = $("<label>").attr("for", "schedule-class-" + i)
                                     .text(preps[i]);
 
             this.classList.append(prepRadio);
@@ -219,14 +219,16 @@ tabs.schedule = {
     classEditor: function(label, txt) {
         var radio = label.prev(),
             old = radio.attr("data-class"),
-            section = txt.trim(),
-            newId = tabs.schedule.radioName + "-" + section,
+            section = txt.trim().replace(/(\'|\\)/g, "").replace(),
+            // if section contains CSS syntax, this will break, so use id num
             relevant = tabs.schedule.tableDiv.find(
-                                              "td[data-class='" + old + "']");
+                                              "td[data-class='" + old + "']"),
+            selector = tabs.schedule.classList.selector + " " +
+                       "input[type='radio'][data-class='" + section + "']";
 
-        if (section === "" || $("#" + newId).length) {
-            // if user entered nothing or a class with this ID exists already
-            $("#" + newId).prop("checked", "checked"); // select that radio!
+        if (section === "" || $(selector).length) {
+            // if user entered nothing or a class with this name exists already
+            $(selector).prop("checked", "checked"); // select that radio!
             radio.remove();
             label.remove();
             if (old) {
@@ -236,9 +238,7 @@ tabs.schedule = {
             return;
         }
 
-        radio.attr("id", newId);
         radio.attr("data-class", section);
-        label.attr("for", newId);
         radio.prop("checked", "checked");
 
         relevant.text(section).attr("data-class", section);
@@ -307,7 +307,7 @@ tabs.schedule = {
             s.getBlock(day, period).meta.style = {};
             return;
         }
-        
+
         // otherwise update the table and the schedule section object
         target.css(c.style);
         section.meta.style = c.style;
@@ -330,6 +330,29 @@ tabs.schedule = {
         s.setBlock(day, period, section);
         target.text(section);
         target.attr("data-class", section)
+    },
+    getNextClassRadioNumber: function() {
+        var relevant = tabs.schedule.classList.find("*[type='radio']"),
+            i, gather = [], temp, biggest = 0, least;
+
+        // TODO: Optimize; this isnt very efficient but its also not critical
+
+        // gather the used ids
+        for (i=0; i < relevant.length; i+=1) {
+            temp = relevant[i].id.split('-');
+            temp = parseInt(temp[temp.length - 1], 10);
+            gather.push(temp);
+            biggest = Math.max(biggest, temp);
+        }
+
+        // find the smallest open id
+        for (i=0; i < biggest; i += 1) {
+            if (!~gather.indexOf(i)) {
+                return tabs.schedule.radioName + "-" + i;
+            }
+        }
+
+        return tabs.schedule.radioName + "-" + (biggest + 1);
     },
     loadEvents: function(tableGrid, s) {
         // attach handlers for switching edit action mode
@@ -386,6 +409,9 @@ tabs.schedule = {
         // (any unused classes will disappear on reload, see this.load)
         this.addButton.click( function() {
             var radio = $("<input>"), label = $("<label>");
+            // set the Id before adding radio to classList!
+            radio.attr("id", tabs.schedule.getNextClassRadioNumber);
+            label.attr("for", tabs.schedule.getNextClassRadioNumber);
             radio.attr("type", "radio");
             radio.attr("name", tabs.schedule.radioName);
             radio.appendTo(tabs.schedule.classList);
