@@ -3,8 +3,8 @@ var program = {
     saving: true,
     calendar: new Calendar(new Date("August 1 " + new Date().getFullYear()),
                            new Date("June 1 " + (new Date().getFullYear()+1))),
-    schedule: new Schedule("ABCDEF".split(''), [1, 2, 3, 4, 5, "Lunch", 6]),
-    style: new Schedule("ABCDEF".split(''), [1, 2, 3, 4, 5, "Lunch", 6])
+    schedule: new Schedule("ABC".split(''), [1, 2, 3, "Lunch", 4]),
+    style: new Schedule("ABC".split(''), [1, 2, 3, "Lunch", 4])
 };
 
 program.undo = {
