@@ -145,7 +145,7 @@ td {
 	}
 
     .cp {
-        display: none;
+        display: none !important;
     }
 
 	#tab-header {
