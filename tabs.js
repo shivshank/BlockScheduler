@@ -434,6 +434,7 @@ tabs.schedule = {
 
 tabs.planner = {
     div: null,
+    dayName: null,
     days: [],
     disabled: [],
     generateDay: function(element, date, c, s, p) {
@@ -533,10 +534,8 @@ tabs.planner = {
 
             if (!oneClass) {
                 tabs.planner.generateDay(cell, d, c, s, p);
-            } else if (
-                     tabs.planner.days.indexOf(getBlockDay(c, s, d)) === -1){
+            } else if (tabs.planner.days.indexOf(getBlockDay(c, s, d)) === -1){
                 // if oneClass and planner.days does not contain the cycle day
-                console.log(getBlockDay(c, s, d), tabs.planner.days.indexOf(getBlockDay(c, s, d)));
                 cell.addClass("placeholder");
             } else {
                 // if oneClass and planner.days includes cycle day
@@ -549,9 +548,54 @@ tabs.planner = {
         // TODO: Add support for different planners
         // (lesson plans, yearly, weekly, per class)
         var date = new Date(c.start),
-            div;
+            div, i, dayDiv, toId;
 
         this.div.empty();
+        // add the day selector and event handler
+        dayDiv = $("<div>").addClass("cp-radio-container").appendTo(this.div);
+        $("<button>").attr("data-clear", "clear")
+                    .appendTo(dayDiv)
+                    .text("Clear")
+                    .click( function(i) {
+            // prop method is different from the attr: it's actually a field
+            $("input[name=" + tabs.planner.dayName + "]")
+                .prop("checked", false);
+            tabs.planner.days = [];
+            tabs.switchTo("planner");
+        });
+
+        for (i=0; i < s.days.length; i+=1) {
+            $("<input>").attr("data-day", s.days[i])
+                        .attr("type", "checkbox")
+                        .attr("name", tabs.planner.dayName)
+                        .prop("id", tabs.planner.dayName + s.days[i])
+                        .prop("checked",
+                            tabs.planner.days.indexOf(s.days[i]) !== -1)
+                        .appendTo(dayDiv);
+            $("<label>").text(s.days[i])
+                        .attr("for", tabs.planner.dayName + s.days[i])
+                        .appendTo(dayDiv);
+        }
+
+        dayDiv.on("change", "input[type=checkbox]", function(e) {
+            var i = tabs.planner.days.indexOf(
+                                           $(e.currentTarget).attr("data-day"));
+            if (e.currentTarget.checked) {
+                // if this is checked and this day isnt added yet
+                if (i === -1) {
+                    tabs.planner.days.push($(e.currentTarget).attr("data-day"));
+                }
+            } else if (i !== -1) {
+                // if this is not checked and day is in the list, remove it
+                tabs.planner.days.splice(i, 1);
+            }
+
+            if (toId) {
+                clearTimeout(toId);
+            }
+            toId = setTimeout(function(){tabs.switchTo("planner");}, 500);
+        });
+
         while (date.getTime() < c.end.getTime()) {
             div = $("<div>").addClass("planner-month").appendTo(this.div);
             this.generateMonth(div, date, true, c, s, p);

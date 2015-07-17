@@ -127,6 +127,7 @@ var init = function() {
     tabs.schedule.init();
 
     tabs.planner.div = $("#planner");
+    tabs.planner.dayName = "planner-days";
 
     tabs.settings.init(program.calendar, program.schedule, program);
 
