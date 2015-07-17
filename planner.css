@@ -27,6 +27,10 @@
 	vertical-align: top;
 }
 
+#planner .one-class {
+	height: 100px;
+}
+
 .planner-period {
     position: relative;
     width: auto;

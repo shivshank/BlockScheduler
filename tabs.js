@@ -434,6 +434,8 @@ tabs.schedule = {
 
 tabs.planner = {
     div: null,
+    days: [],
+    disabled: [],
     generateDay: function(element, date, c, s, p) {
         var block = getBlockDay(c, s, date),
             container,
@@ -475,7 +477,7 @@ tabs.planner = {
                 item.append( $("<span>").text(s.periods[i]).addClass("num") );
             }
 
-            if (day[i]) {
+            if (day[i] && this.disabled.indexOf(day[i].name) === -1 ) {
                 item.append( $("<span>").text(day[i].name) );
                 if (day[i].meta.style) {
                     item.css(day[i].meta.style);
@@ -484,7 +486,7 @@ tabs.planner = {
         }
     },
     generateMonth: function(div, date, omitWeekends, c, s, p) {
-        var table, weeks, head, dow;
+        var table, weeks, head, dow, oneClass = false;
 
         // append header
         div.append($("<h1>").text(
@@ -513,6 +515,10 @@ tabs.planner = {
         // turn this list into tds with each items text and append to head
         dow.split(" ").forEach(function(i){ head.append($("<td>").text(i)); });
 
+        if (tabs.planner.days.length > 0) {
+            oneClass = true;
+        }
+
         table.forEachCell( function(cell, row, x, y) {
             var d = day.fromGrid(date.getFullYear(), date.getMonth(),
                                                             x, y, omitWeekends);
@@ -525,7 +531,18 @@ tabs.planner = {
                 return;
             }
 
-            tabs.planner.generateDay(cell, d, c, s, p);
+            if (!oneClass) {
+                tabs.planner.generateDay(cell, d, c, s, p);
+            } else if (
+                     tabs.planner.days.indexOf(getBlockDay(c, s, d)) === -1){
+                // if oneClass and planner.days does not contain the cycle day
+                console.log(getBlockDay(c, s, d), tabs.planner.days.indexOf(getBlockDay(c, s, d)));
+                cell.addClass("placeholder");
+            } else {
+                // if oneClass and planner.days includes cycle day
+                cell.addClass("one-class");
+            }
+
         });
     },
     load: function(c, s, p) {
