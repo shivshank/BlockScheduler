@@ -437,8 +437,8 @@ tabs.planner = {
     dayName: null,
     days: [],
     disabled: [],
-    generateDay: function(element, date, c, s, p) {
-        var block = getBlockDay(c, s, date),
+    generateDay: function(element, date, c, s, p, dayIterator) {
+        var block = dayIterator.getDate(date),
             container,
             item, day, i, half;
 
@@ -486,7 +486,7 @@ tabs.planner = {
             }
         }
     },
-    generateMonth: function(div, date, omitWeekends, c, s, p) {
+    generateMonth: function(div, date, omitWeekends, c, s, p, cycle) {
         var table, weeks, head, dow, oneClass = false;
 
         // append header
@@ -533,8 +533,8 @@ tabs.planner = {
             }
 
             if (!oneClass) {
-                tabs.planner.generateDay(cell, d, c, s, p);
-            } else if (tabs.planner.days.indexOf(getBlockDay(c, s, d)) === -1){
+                tabs.planner.generateDay(cell, d, c, s, p, cycle);
+            } else if (tabs.planner.days.indexOf(cycle.getDate(d)) === -1){
                 // if oneClass and planner.days does not contain the cycle day
                 cell.addClass("placeholder");
             } else {
@@ -548,7 +548,8 @@ tabs.planner = {
         // TODO: Add support for different planners
         // (lesson plans, yearly, weekly, per class)
         var date = new Date(c.start),
-            div, i, dayDiv, toId;
+            div, i, dayDiv, toId,
+            cycle = new DayIterator(c, s);
 
         this.div.empty();
         // add the day selector and event handler
@@ -596,9 +597,9 @@ tabs.planner = {
             toId = setTimeout(function(){tabs.switchTo("planner");}, 500);
         });
 
-        while (date.getTime() < c.end.getTime()) {
+        while (dayLTE(date, c.end)) {
             div = $("<div>").addClass("planner-month").appendTo(this.div);
-            this.generateMonth(div, date, true, c, s, p);
+            this.generateMonth(div, date, true, c, s, p, cycle);
             date.setMonth(date.getMonth() + 1);
         }
     }
@@ -665,10 +666,6 @@ tabs.calendar = {
     div: null,
     dayTypeSelector: null,
     toolTipFormat: null,
-    createYear: function(y) {
-        var month = 0, day = 1;
-
-    },
     init: function(c) {
         $("#calendar-update").click( function(e) {
             c.start = new Date($("#calendar-start-date").val());
@@ -693,7 +690,8 @@ tabs.calendar = {
     load: function(c, s) {
         // remember that Date's month is zero based
         var current = new Date(c.start.getFullYear(), c.start.getMonth(), 1),
-            m, year, table, header, div, dow, weeks, block, oldBlock;
+            m, year, table, header, div, dow, weeks, block, oldBlock,
+            dayIterator = new DayIterator(c, s);
 
         $("#calendar-start-date").val(c.formatDate(c.start));
         $("#calendar-end-date").val(c.formatDate(c.end));
@@ -708,7 +706,7 @@ tabs.calendar = {
         $("#" + tabs.calendar.toolTipFormat + "-" + this.getDayType()).show();
 
         dow = $("<tr><td>M</td><td>T</td><td>W</td><td>H</td><td>F</td></tr>");
-        while (current.getTime() < c.end.getTime()) {
+        while (dayLTE(current, c.end)) {
             // for each month of the school year
             m = current.getMonth();
             year = current.getFullYear();
@@ -739,15 +737,14 @@ tabs.calendar = {
                     return;
                 }
 
-                block = getBlockDay(c, s, d);
-                if (c.isDay(c.SET_DAY, d)) {
+                block = dayIterator.getDate(d);
+                // OPTIMIZATION: Cache day type
+                if (!block) {
+                    // block will be null if out of school year or NO_SCHOOL
+                    cell.addClass("no-school");
+                } else if (c.isDay(c.SET_DAY, d)) {
                     cell.addClass("set-day");
                     cell.text(block);
-                } else if (c.isDay(c.NO_SCHOOL, d)) {
-                    cell.addClass("no-school");
-                } else if (!c.isSchoolDay(d)) {
-                    // if not a NO_SCHOOL day, then this day is off the calendar
-                    cell.addClass("no-school");
                 } else if (c.isDay(c.NO_CLASS, d)) {
                     cell.addClass("no-class");
                     cell.text(block);

@@ -174,8 +174,8 @@ Calendar.prototype.getDayType = function(day) {
 };
 Calendar.prototype.isSchoolDay = function(d) {
     // DO NOT CHECK OFF DAYS - School is in session, but no classes are
-    return d.getTime() >= this.start.getTime()
-        && d.getTime() <= this.end.getTime()
+    return dayGTE(d, this.start)
+        && dayLTE(d, this.end)
         && d.getDay() !== 0 && d.getDay() !== 6
         && !this.isDay(this.NO_SCHOOL, d);
 };
@@ -469,8 +469,48 @@ day.formatDate = function(d) {
 };
 
 var dayEquals = function(a, b) {
+    a = new Date(a);
+    b = new Date(b);
+    a.setHours(0, 0, 0);
+    b.setHours(0, 0, 0);
+    // the date object DOES NOT override === or == operators, must use getTime
     return a.getTime() === b.getTime();
 };
+
+var dayLT = function(a, b) {
+    a = new Date(a);
+    b = new Date(b);
+    a.setHours(0, 0, 0);
+    b.setHours(0, 0, 0);
+    // the date object overrides < and > operators
+    return a < b;
+};
+
+var dayLTE = function(a, b) {
+    a = new Date(a);
+    b = new Date(b);
+    a.setHours(0, 0, 0);
+    b.setHours(0, 0, 0);
+    // the date object overrides < and > operators
+    return a <= b;
+};
+
+var dayGT = function(a, b) {
+    a = new Date(a);
+    b = new Date(b);
+    a.setHours(0, 0, 0);
+    b.setHours(0, 0, 0);
+    return a > b;
+}
+
+var dayGTE = function(a, b) {
+    a = new Date(a);
+    b = new Date(b);
+    a.setHours(0, 0, 0);
+    b.setHours(0, 0, 0);
+    // the date object overrides < and > operators
+    return a >= b;
+}
 
 function forEachSchoolDay(cal, sched, func) {
     var i = new Date(cal.start),
@@ -484,7 +524,7 @@ function forEachSchoolDay(cal, sched, func) {
         throw "Cannot select a start block";
     }
 
-    for (; i.getTime() < end.getTime() + 1; i.setDate(i.getDate() + 1)) {
+    for (; dayLTE(i, end); i.setDate(i.getDate() + 1)) {
 
         if (!cal.isSchoolDay(i)) {
             daysOff += 1;
@@ -527,6 +567,82 @@ function getBlockDay(calendar, schedule, d) {
     forEachSchoolDay(calendar, schedule, func);
 
     return r;
+};
+
+var DayIterator = function(calendar, schedule, start, start_block) {
+    this.calendar = calendar;
+    this.schedule = schedule;
+    this.date = new Date(start? start : calendar.start);
+    this.previous = null;
+    this.nextCycle = start_block? start_block : schedule.days[0];
+    this.done = false;
+
+    if (dayLT(this.date, calendar.start)) {
+        this.date = new Date(calendar.start);
+    } else if (dayGT(this.date, calendar.end)) {
+        // return null since its a useless iterator...
+        // though..., should we instead just clamp the date?
+        return null;
+    }
+
+
+    this.cycle = calendar.isSchoolDay(this.date)? this.nextCycle : null;
+};
+
+DayIterator.prototype.current = function() {
+    return this.cycle;
+}
+
+DayIterator.prototype.getDate = function(date) {
+    if (dayLT(date, this.date)) {
+        console.log(this.calendar.formatDate(date), this.calendar.formatDate(this.date));
+        throw "Cannot go in reverse, cache the results of DayIterator.";
+    }
+    if (!this.hasNext()) {
+        return null;
+    }
+
+    while (dayLT(this.date, date) && this.hasNext()) {
+        this.next();
+    }
+
+    return this.current();
+};
+
+DayIterator.prototype.hasNext = function() {
+    return !this.done;
+}
+
+DayIterator.prototype.next = function() {
+    var setDay, days = this.schedule.days;
+
+    this.date.setDate(this.date.getDate() + 1);
+    if (dayGT(this.date, this.calendar.end)) {
+        this.done = true;
+        this.cycle = null;
+        this.nextCycle = null;
+        return null;
+    }
+
+    if (this.cycle) {
+        this.previous = this.cycle;
+    }
+
+    setDay = this.calendar.isDay(this.calendar.SET_DAY, this.date);
+    if (setDay) {
+        this.cycle = setDay.block;
+        this.nextCycle = setDay.block;
+    } else if (this.calendar.isSchoolDay(this.date)) {
+        this.cycle = this.nextCycle;
+    } else {
+        // don't advance the cycle if it's not a school day
+        this.cycle = null;
+        return null;
+    }
+    // advance the cycle (it can only be a SET_DAY or SCHOOL_DAY here)
+    this.nextCycle = days[(days.indexOf(this.nextCycle) + 1) % (days.length)];
+
+    return this.cycle;
 };
 
 /*
