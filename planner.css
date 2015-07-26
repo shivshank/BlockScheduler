@@ -64,7 +64,7 @@
 	background: #666666;
 }
 
-@media print, (max-width: 9in) {
+@media print, (max-width: 9in), (max-device-width: 9in) {
     .planner {
         width: 100%;
         padding: 0px;
