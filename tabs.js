@@ -538,8 +538,9 @@ tabs.planner = {
                 // if oneClass and planner.days does not contain the cycle day
                 cell.addClass("placeholder");
             } else {
-                // if oneClass and planner.days includes cycle day
+                // if oneClass and planner.days.contains( cycle day )
                 cell.addClass("one-class");
+                cell.append($("<h1>").text(d.getDate() + " " + cycle.getDate(d)));
             }
 
         });
