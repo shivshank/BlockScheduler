@@ -126,7 +126,7 @@ var init = function() {
     tabs.schedule.quickstyleName = "schedule-style";
     tabs.schedule.init();
 
-    tabs.planner.div = $("#planner");
+    tabs.planner.div = $("#planner-year");
     tabs.planner.dayName = "planner-days";
 
     tabs.settings.init(program.calendar, program.schedule, program);
