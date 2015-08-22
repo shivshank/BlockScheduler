@@ -594,6 +594,10 @@ DayIterator.prototype.current = function() {
 }
 
 DayIterator.prototype.getDate = function(date) {
+    if (dayLT(date, this.calendar.start)) {
+        return null;
+    }
+    
     if (dayLT(date, this.date)) {
         console.log(this.calendar.formatDate(date), this.calendar.formatDate(this.date));
         throw "Cannot go in reverse, cache the results of DayIterator.";
