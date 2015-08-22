@@ -555,6 +555,7 @@ tabs.planner = {
         this.div.empty();
         // add the day selector and event handler
         dayDiv = $("<div>").addClass("cp-radio-container").appendTo(this.div);
+        dayDiv.attr("id", "planner-blanks");
         $("<button>").attr("data-clear", "clear")
                     .appendTo(dayDiv)
                     .text("Clear")

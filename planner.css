@@ -77,6 +77,10 @@
 		background: inherit;
 	}
 
+	#planner-blanks {
+		display: none;
+	}
+
     .planner {
         width: 100%;
         padding: 0px;
@@ -96,6 +100,10 @@
 		page-break-inside: avoid;
 	}
 
+	.planner-month:last-child {
+		page-break-after: avoid;
+	}
+	
     #planner-year table {
         width: 8in;
         margin: 0px auto;
