@@ -32,17 +32,17 @@
                 <div class="info">
                     <h1>Getting Started</h1>
                     <p>Use the tabs on the left to navigate the program.</p>
-                    <p>This program will build you a custom calendar for the year, tailored to your class schedule! You can also generate weekly lesson plan templates under "See it."</p>
+                    <p>This program will build you a custom calendar for the year, tailored to your class schedule! You can also generate blank monthly templates under "See it."</p>
                     <p>Use the build tab to input your class schedule.</p>
-                    <p>Use the customize tab to configure more advanced settings.</p>
+                    <p>Use the customize tab to configure the calendar appearance and more advanced settings.</p>
                     <p>The resulting calendar planner will appear under the "See it" tab.</p>
-                    <p>If there's any interruptions like snow days or emergency cancellations, you can edit the schools calendar under "Snow Days."</p>
+                    <p>If there are any interruptions like snow days or emergency cancellations, you can edit the school's calendar under "Snow Days."</p>
                     <h1>Printing</h1>
                     <p>The planners are printable!</p>
                     <p>The program will do its best to make sure each month fits on its own page, however it might not always work things out perfectly.</p>
                     <p><strong>Be sure to use print preview</strong>. If your browser has a shrink to fit option, enable it, and make sure to also <strong>enable print backgrounds</strong> if you want to see any shading or colors. </p>
                     <p>Some browsers let you disable the headers and footers, such as the time of printing. It is also recommended that you reduce the margins as much as possible.</p>
-                    <p>If shrink to fit fails to fit each month onto its own page, try adjusting the scale until it does fit. 80% seems to work well.</p>
+                    <p>If shrink to fit fails to fit each month onto its own page, <strong>try adjusting the scale until it does fit.</strong> 80% seems to work well unless your schedule is long.</p>
                     <p>Each tab is printable, so be sure to select the "See it" tab if you want to print your yearly planner. This program could also be used to print your schedule ("Build it") or a one page calendar ("Snow days").</p>
                     <p>For best results, use Firefox or Chrome on PC/Windows and Safari on Mac.</p>
                 </div>
@@ -95,6 +95,9 @@
                 </div>
             </div>
             <div id="planner" class="tab" data-name="See it">
+                <div class="info">
+                    <p>Below is your planner for the year. If you want a blank calendar with the day schedule printed on it, try hitting the buttons below. You may find the blank calendar useful.</p>
+                </div>
                 <div id="planner-year"></div>
             </div>
             <div id="settings" class="tab" data-name="Customize it">
@@ -116,13 +119,14 @@
                     <h2>Save Control</h2>
                     <input type="checkbox" name="s-saving" id="s-saving"/>
                         <label for="s-saving">Auto Save</label><br />
-                    <p>You can delete a schedule or calendar here. You can undo a delete with the restore buttons below until the page is reloaded.</p>
+                    <p>You can delete a schedule or calendar here. You can undo a delete with the restore buttons below (until you refresh the page).</p>
                     <button id="s-erase-calendar">Delete Calendar</button>
                     <button id="s-erase-schedule">Delete Schedule</button>
                     <button id="s-load-calendar">Restore Calendar</button>
                     <button id="s-load-schedule">Restore Schedule</button>
                 </div>
                 <div class="settings-group">
+                    <h2>Advanced</h2>
                     <textarea id="s-save-text"></textarea>
                     <button id="s-save-button">Export</button>
                     <p>Click export calendar to generate the save file for the current schedule. Only server admins need to do this.</p>
@@ -132,10 +136,10 @@
                 <h1 class="calendar-header">School Calendar</h1>
                 <div class="info">
                     <button id="calendar-refresh">Reload Calendar</button>
-                    <p>This page is for adding snow days. It can also be used to edit and play with the calendar. Changes will be automatically saved. If you do not want this, disable saving under settings.</p>
+                    <p>This page is for adding snow days, cancelations, or emergency closures to the calendar. It can also be used to edit and play with the calendar. Changes will be automatically saved. If you do not want this, disable saving under settings.</p>
                     <p>If the school calendar is not updated by an administrator, this page can also be used to build the entire calendar yourself.</p>
                     <p>To edit the calendar, simply select a day type below and click a date on the calendar to set it to that day type.</p>
-                    <p>If you make a mistake and want to forget your changes, you can hit "erase calendar" under the customize tab.</p>
+                    <p>If you make a mistake and want to forget the entire calendar, you can hit "erase calendar" under the customize tab.</p>
                     <p class="warning">ADVANCED: You can export this calendar to a file from the settings page.</p>
                 </div>
                 <div id="calendar-cp" class="cp">
@@ -150,7 +154,7 @@
                         <input id="calendar-type-erase" type="radio" name="calendar-day-type" checked="checked" />
                             <label for="calendar-type-erase">erase</label>
                         <input id="calendar-type-holiday" type="radio" name="calendar-day-type" />
-                            <label for="calendar-type-holiday">holiday</label>
+                            <label for="calendar-type-holiday">no school</label>
                         <input id="calendar-type-set" type="radio" name="calendar-day-type" />
                             <label for="calendar-type-set">set day</label>
                         <input id="calendar-type-half" type="radio" name="calendar-day-type" />
@@ -159,7 +163,7 @@
                             <label for="calendar-type-noclass">no class</label>
                     </div>
                     <p class="calendar-tip" id="calendar-tip-erase">The eraser type will remove any calendar settings for a specific date. Select another type, like "holiday" for more info on what that type does.</p>
-                    <p class="calendar-tip" id="calendar-tip-holiday">Holidays are days where school is not in session. The day cycle skips that date.</p>
+                    <p class="calendar-tip" id="calendar-tip-holiday">These are days where school is not in session. The day cycle skips that date. Typically these are holidays, snow days, or any other cancelation.</p>
                     <div class="calendar-tip" id="calendar-tip-set">
                         <p>Set days are days when the day cycle must be set to a certain day. This might happen after an unplanned series of snow days or in the event of cycle makeup days.</p>
                         <input type="text" id="calendar-setday-block" /><label for="calendar-setday-block">Type the block to set a day to.</label>
