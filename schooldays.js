@@ -570,6 +570,7 @@ function getBlockDay(calendar, schedule, d) {
 };
 
 var DayIterator = function(calendar, schedule, start, start_block) {
+    var days;
     this.calendar = calendar;
     this.schedule = schedule;
     this.date = new Date(start? start : calendar.start);
@@ -587,6 +588,12 @@ var DayIterator = function(calendar, schedule, start, start_block) {
 
 
     this.cycle = calendar.isSchoolDay(this.date)? this.nextCycle : null;
+
+    days = this.schedule.days;
+    if (this.cycle !== null) {
+        this.nextCycle = days[(days.indexOf(this.nextCycle) + 1)
+                            % (days.length)];
+    }
 };
 
 DayIterator.prototype.current = function() {
@@ -597,7 +604,7 @@ DayIterator.prototype.getDate = function(date) {
     if (dayLT(date, this.calendar.start)) {
         return null;
     }
-    
+
     if (dayLT(date, this.date)) {
         console.log(this.calendar.formatDate(date), this.calendar.formatDate(this.date));
         throw "Cannot go in reverse, cache the results of DayIterator.";
