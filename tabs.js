@@ -504,6 +504,9 @@ tabs.planner = {
 
         // format the table with the correct number of weeks
         weeks = new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
+        // add the day of the week to the number of days in the month
+        // to compensate for months not starting on sunday
+        weeks += date.getDay();
         weeks = Math.ceil(weeks / 7);
         table.makeUniform(weeks);
         table.getTable().appendTo(div);
